@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AllNatural — Research Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0F0A06;--bg1:#1A1008;--bg2:#261810;--surf:#2E1E10;--surf2:#3A2618;
+  --brd:#4A3020;--brd2:#5A4030;
+  --tx:#F2E6D4;--tx2:#C8A880;--tx3:#8A6848;
+  --or:#E8703A;--or2:#F09060;--pk:#D4506A;--pk2:#E87890;
+  --tl:#5A9090;--tl2:#78B4B0;--gr:#5A9E78;--gr2:#78C898;
+  --gd:#C89848;--gd2:#E0BC70;--rd:#C84040;--rd2:#E07070;
+}
+body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-height:100vh}
+.shell{max-width:1100px;margin:0 auto;padding:20px 16px}
+/* HEADER */
+.admin-hdr{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--brd)}
+.admin-logo{font-family:'Cinzel',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,var(--or),var(--pk));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.admin-sub{font-size:11px;color:var(--tx3);margin-top:2px}
+/* CONFIG PANEL */
+.config-panel{background:var(--bg1);border:1.5px solid var(--brd2);border-radius:14px;padding:16px;margin-bottom:20px}
+.config-title{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--tx);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.config-row{display:flex;gap:10px;flex-wrap:wrap}
+.inp{background:var(--surf);border:1.5px solid var(--brd);border-radius:8px;color:var(--tx);font-size:12px;padding:9px 12px;outline:none;font-family:'Nunito',sans-serif;transition:border .2s}
+.inp:focus{border-color:var(--tl)}
+.btn{padding:9px 18px;background:linear-gradient(135deg,var(--or),var(--pk));border:none;border-radius:9px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;transition:all .2s}
+.btn:active{transform:scale(.97)}
+.btn-ghost{padding:9px 18px;background:var(--surf);border:1.5px solid var(--brd2);border-radius:9px;color:var(--tx2);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-tl{background:linear-gradient(135deg,var(--tl),var(--tl2))}
+/* STATUS BAR */
+.status-bar{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:10px 14px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.status-chip{font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;background:var(--surf2);color:var(--tx2)}
+.status-chip.good{background:rgba(90,158,120,.15);color:var(--gr2);border:1px solid rgba(90,158,120,.3)}
+/* TABS */
+.tabs{display:flex;background:var(--surf);border-radius:12px;padding:3px;margin-bottom:16px;gap:2px;flex-wrap:wrap}
+.tab{flex:1;min-width:90px;padding:8px 10px;border:none;background:none;border-radius:9px;font-size:11px;font-weight:700;color:var(--tx3);cursor:pointer;transition:all .2s}
+.tab.active{background:var(--bg1);color:var(--or2);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+/* TABLE */
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--brd)}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{background:var(--bg2);padding:10px 12px;text-align:left;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;border-bottom:1px solid var(--brd)}
+td{padding:9px 12px;border-bottom:1px solid var(--brd);color:var(--tx2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700}
+.badge-tl{background:rgba(90,144,144,.15);color:var(--tl2)}
+.badge-or{background:rgba(232,112,58,.15);color:var(--or2)}
+.badge-pk{background:rgba(212,80,106,.15);color:var(--pk2)}
+.badge-gr{background:rgba(90,158,120,.15);color:var(--gr2)}
+.badge-gd{background:rgba(200,152,72,.15);color:var(--gd2)}
+.badge-rd{background:rgba(200,64,64,.15);color:var(--rd2)}
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.stat-card{background:var(--bg1);border:1px solid var(--brd);border-radius:12px;padding:14px;text-align:center}
+.stat-val{font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--or2);margin-bottom:3px}
+.stat-lbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px}
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--tx3);font-size:13px}
+.spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--brd2);border-top-color:var(--or);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* EMPTY */
+.empty{text-align:center;padding:40px;color:var(--tx3)}
+.empty-ico{font-size:40px;margin-bottom:10px}
+/* USER DETAIL */
+.user-card{background:var(--bg1);border:1px solid var(--brd2);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.user-card:hover{border-color:var(--or);background:var(--bg2)}
+.uid-badge{font-size:9px;background:var(--surf2);color:var(--tx3);padding:2px 7px;border-radius:8px;font-family:monospace}
+.answer-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.answer-item{background:var(--surf);border-radius:8px;padding:8px 10px}
+.answer-q{font-size:9px;color:var(--tx3);margin-bottom:2px;font-weight:700;text-transform:uppercase}
+.answer-v{font-size:11px;color:var(--tx2);font-weight:700}
+/* FILTERS */
+.filter-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filter-lbl{font-size:10px;font-weight:700;color:var(--tx3)}
+select.inp{cursor:pointer}
+/* SECTION TITLE */
+.section-title{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--tx);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--brd)}
+/* CHART BAR */
+.bar-chart{margin:10px 0}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.bar-lbl{font-size:10px;color:var(--tx2);min-width:120px;font-weight:600}
+.bar-bg{flex:1;height:16px;background:var(--surf);border-radius:8px;overflow:hidden}
+.bar-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--or),var(--pk));transition:width .6s ease}
+.bar-val{font-size:10px;color:var(--tx3);min-width:30px;text-align:right}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- HEADER -->
+<div class="admin-hdr">
+  <div>
+    <div class="admin-logo">AllNatural</div>
+    <div class="admin-sub">Research Dashboard · Test Group Data</div>
+  </div>
+  <div style="margin-left:auto;display:flex;gap:8px">
+    <button class="btn-ghost" onclick="exportAll()">⬇ Export All CSV</button>
+    <button class="btn" onclick="loadAll()">🔄 Refresh</button>
+  </div>
+</div>
+
+<!-- CONFIG -->
+<div class="config-panel" id="configPanel">
+  <div class="config-title">🗄️ Supabase Connection</div>
+  <div class="config-row">
+    <input class="inp" id="cfgUrl" type="text" placeholder="Project URL (https://xxx.supabase.co)" style="flex:2;min-width:260px"/>
+    <input class="inp" id="cfgKey" type="password" placeholder="service_role key (secret — keep private)" style="flex:2;min-width:260px"/>
+    <button class="btn" onclick="connect()">Connect →</button>
+  </div>
+  <div style="margin-top:8px;font-size:10px;color:var(--tx3)">Use your <strong style="color:var(--gd2)">service_role</strong> key here (not the anon key) — it lets you read all users' data. Keep this page private.</div>
+</div>
+
+<!-- STATUS -->
+<div class="status-bar" id="statusBar">
+  <div style="font-size:12px;font-weight:700;color:var(--tx3)">Not connected — enter your Supabase credentials above</div>
+</div>
+
+<!-- STAT CARDS -->
+<div class="stats-grid" id="statsGrid"></div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('users',this)">👥 Users</button>
+  <button class="tab" onclick="showTab('checkins',this)">📋 Check-ins</button>
+  <button class="tab" onclick="showTab('mh',this)">🧠 Wellbeing</button>
+  <button class="tab" onclick="showTab('tests',this)">🔬 Tests</button>
+  <button class="tab" onclick="showTab('products',this)">🧴 Products</button>
+  <button class="tab" onclick="showTab('washdays',this)">🚿 Wash Days</button>
+  <button class="tab" onclick="showTab('installs',this)">🧶 Style Installs</button>
+  <button class="tab" onclick="showTab('insights',this)">📊 Insights</button>
+  <button class="tab" onclick="showTab('correlation',this)">🔗 Correlations</button>
+  <button class="tab" onclick="showTab('world',this)">🌍 World Map</button>
+  <button class="tab" onclick="showTab('requests',this)" id="tabRequests">🔔 Requests</button>
+  <button class="tab" onclick="showTab('releases',this)">🚀 Releases</button>
+</div>
+
+<!-- CONTENT PANELS -->
+<div id="panelUsers">
+  <div class="filter-row">
+    <span class="filter-lbl">Filter:</span>
+    <select class="inp" id="filterHairType" onchange="renderUsers()" style="width:120px">
+      <option value="">All hair types</option>
+      <option>4A</option><option>4B</option><option>4C</option><option>3C</option><option>Locs</option>
+    </select>
+    <select class="inp" id="filterGender" onchange="renderUsers()" style="width:120px">
+      <option value="">All genders</option>
+      <option>Woman</option><option>Man</option><option>Non-binary</option>
+    </select>
+  </div>
+  <div id="usersList"><div class="empty"><div class="empty-ico">👥</div><div>Connect to view users</div></div></div>
+</div>
+
+<div id="panelCheckins" style="display:none">
+  <div class="filter-row">
+    <span class="filter-lbl">Type:</span>
+    <select class="inp" id="filterCiType" onchange="renderCheckins()" style="width:150px">
+      <option value="">All check-ins</option>
+      <option value="wash">After Wash Day</option>
+      <option value="takedown">After Take-Down</option>
+      <option value="braids">After Install</option>
+      <option value="moisturise">After Moisturising</option>
+      <option value="nutrition">Nutrition</option>
+    </select>
+  </div>
+  <div id="checkinsList"><div class="loading"><div class="spinner"></div><div>Loading…</div></div></div>
+</div>
+
+<div id="panelMh" style="display:none">
+  <div id="mhList"><div class="empty"><div class="empty-ico">🧠</div><div>Connect to view wellbeing data</div></div></div>
+</div>
+
+<div id="panelTests" style="display:none">
+  <div class="filter-row">
+    <span class="filter-lbl">Test:</span>
+    <select class="inp" id="filterTest" onchange="renderTests()" style="width:160px">
+      <option value="">All tests</option>
+      <option value="porosity">Porosity</option>
+      <option value="thickness">Strand Thickness</option>
+      <option value="elasticity">Elasticity</option>
+      <option value="density">Hair Density</option>
+      <option value="scalp">Scalp Type</option>
+    </select>
+  </div>
+  <div id="testsList"></div>
+</div>
+
+<div id="panelProducts" style="display:none">
+  <div class="filter-row">
+    <span class="filter-lbl">Category:</span>
+    <select class="inp" id="filterProdCat" onchange="renderProducts()" style="width:160px">
+      <option value="">All categories</option>
+      <option value="shampoo">Shampoo / Co-wash</option>
+      <option value="conditioner">Conditioner</option>
+      <option value="moisturiser">Moisturiser</option>
+      <option value="oil">Oil / Serum</option>
+      <option value="styler">Styler</option>
+      <option value="scalp">Scalp Treatment</option>
+      <option value="supplement">Supplement</option>
+    </select>
+  </div>
+  <div id="productsList"></div>
+</div>
+
+<div id="panelWashdays" style="display:none">
+  <div id="washdaysList"></div>
+</div>
+
+<div id="panelInstalls" style="display:none">
+  <div id="installsList"></div>
+</div>
+
+<div id="panelInsights" style="display:none">
+  <div id="insightsContent"></div>
+</div>
+
+<div id="panelCorrelation" style="display:none">
+  <div class="section-title">🔗 Supplement Correlation Analysis</div>
+  <div style="font-size:11px;color:var(--tx3);margin-bottom:14px">Cross-references supplement start dates with hair health ratings to identify which supplements correlate with improvement.</div>
+  <div id="correlationContent"><div class="empty"><div class="empty-ico">🔗</div><div>Connect to Supabase to view correlations</div></div></div>
+</div>
+
+<!-- WORLD MAP PANEL -->
+<div id="panelWorld" style="display:none">
+  <div class="section-title">🌍 User World Map</div>
+  <div style="font-size:11px;color:var(--tx3);margin-bottom:14px">Timezone-based location — shows where your users are globally.</div>
+  <div id="worldMapWrap"></div>
+  <div id="worldRegionBreakdown" style="margin-top:16px"></div>
+</div>
+
+<!-- REQUESTS PANEL -->
+<div id="panelRequests" style="display:none">
+  <div class="section-title">🔔 Beta Requests &amp; Access Alerts</div>
+  <div style="font-size:11px;color:var(--tx3);margin-bottom:14px">Join requests from the pitch page · blocked access attempts · active tokens</div>
+  <div id="betaRequestsWrap"></div>
+  <div style="margin-top:20px" id="accessAlertsWrap"></div>
+  <div style="margin-top:20px" id="tokenListWrap"></div>
+</div>
+
+<!-- RELEASES PANEL -->
+<div id="panelReleases" style="display:none">
+  <div class="section-title">🚀 Update Release Control</div>
+  <div style="font-size:11px;color:var(--tx3);margin-bottom:14px">Lock the app during beta — push updates only when you're ready.</div>
+  <div id="releasesWrap"></div>
+</div>
+
+</div><!-- /shell -->
+
+<script>
+'use strict';
+
+let SB_URL = '', SB_KEY = '';
+let DB = { users:[], checkins:[], mh:[], tests:[], products:[], washdays:[], installs:[], takedowns:[] };
+
+// ── PERSISTED CONFIG ───────────────────────────────────────────────────────
+function loadConfig() {
+  SB_URL = localStorage.getItem('admin_sb_url') || '';
+  SB_KEY = localStorage.getItem('admin_sb_key') || '';
+  if (SB_URL) document.getElementById('cfgUrl').value = SB_URL;
+  if (SB_KEY) document.getElementById('cfgKey').value = SB_KEY;
+  if (SB_URL && SB_KEY) loadAll();
+}
+
+function connect() {
+  SB_URL = (document.getElementById('cfgUrl').value || '').trim().replace(/\/$/, '');
+  SB_KEY = (document.getElementById('cfgKey').value || '').trim();
+  if (!SB_URL || !SB_KEY) { alert('Enter both Project URL and service_role key'); return; }
+  localStorage.setItem('admin_sb_url', SB_URL);
+  localStorage.setItem('admin_sb_key', SB_KEY);
+  loadAll();
+}
+
+// ── API ────────────────────────────────────────────────────────────────────
+async function sbFetch(table, params) {
+  const url = `${SB_URL}/rest/v1/${table}?select=*${params||''}&order=created_at.desc&limit=2000`;
+  const r = await fetch(url, {
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+async function loadAll() {
+  setStatus('loading');
+  try {
+    const [users, checkins, mh, tests, products, washdays, installs, takedowns,
+           betaReqs, accessReqs, tokens] = await Promise.all([
+      sbFetch('an_users'),
+      sbFetch('an_checkins'),
+      sbFetch('an_mh_checkins'),
+      sbFetch('an_tests'),
+      sbFetch('an_products'),
+      sbFetch('an_wash_days'),
+      sbFetch('an_style_installs'),
+      sbFetch('an_takedowns'),
+      sbFetch('an_beta_requests').catch(()=>[]),
+      sbFetch('an_access_requests').catch(()=>[]),
+      sbFetch('an_tokens').catch(()=>[]),
+    ]);
+    DB = { users, checkins, mh, tests, products, washdays, installs, takedowns,
+           betaReqs, accessReqs, tokens };
+    setStatus('ok');
+    renderStats();
+    renderUsers();
+    renderCheckins();
+    renderMH();
+    renderTests();
+    renderProducts();
+    renderWashdays();
+    renderInstalls();
+    renderInsights();
+    renderCorrelation();
+    renderWorldMap();
+    renderRequests();
+    renderReleases();
+    updateRequestsBadge();
+  } catch(e) {
+    setStatus('error', e.message);
+  }
+}
+
+// ── STATUS ─────────────────────────────────────────────────────────────────
+function setStatus(state, msg) {
+  const el = document.getElementById('statusBar');
+  if (state === 'loading') {
+    el.innerHTML = `<div class="spinner" style="width:16px;height:16px;margin:0"></div><div style="font-size:11px;color:var(--tx3)">Loading data…</div>`;
+  } else if (state === 'ok') {
+    const t = new Date().toLocaleTimeString();
+    el.innerHTML = `
+      <div class="status-chip good">● Connected</div>
+      <div style="font-size:11px;color:var(--tx2)">${SB_URL.replace('https://','').split('.')[0]}</div>
+      <div style="font-size:10px;color:var(--tx3);margin-left:auto">Last updated: ${t}</div>`;
+  } else {
+    el.innerHTML = `<div class="status-chip" style="background:rgba(200,64,64,.15);color:var(--rd2);border:1px solid rgba(200,64,64,.3)">● Error</div>
+      <div style="font-size:11px;color:var(--rd2)">${msg||'Check your credentials'}</div>`;
+  }
+}
+
+// ── STAT CARDS ─────────────────────────────────────────────────────────────
+function renderStats() {
+  const g = document.getElementById('statsGrid');
+  const stats = [
+    { val: DB.users.length,    lbl: 'Total Users',       ico: '👥' },
+    { val: DB.checkins.length, lbl: 'Check-ins',         ico: '📋' },
+    { val: DB.mh.length,       lbl: 'MH Check-ins',      ico: '🧠' },
+    { val: DB.tests.length,    lbl: 'Tests Completed',   ico: '🔬' },
+    { val: DB.products.length, lbl: 'Products Logged',   ico: '🧴' },
+    { val: DB.washdays.length, lbl: 'Wash Days Logged',  ico: '🚿' },
+    { val: DB.installs.length, lbl: 'Style Installs',    ico: '🧶' },
+    { val: DB.takedowns.length,lbl: 'Take-Downs',        ico: '💆🏿' },
+  ];
+  g.innerHTML = stats.map(s => `
+    <div class="stat-card">
+      <div style="font-size:22px;margin-bottom:4px">${s.ico}</div>
+      <div class="stat-val">${s.val}</div>
+      <div class="stat-lbl">${s.lbl}</div>
+    </div>`).join('');
+}
+
+// ── USERS ──────────────────────────────────────────────────────────────────
+function renderUsers() {
+  const el = document.getElementById('usersList');
+  const htFilter  = (document.getElementById('filterHairType') || {}).value || '';
+  const genFilter = (document.getElementById('filterGender')   || {}).value || '';
+  let users = DB.users;
+  if (htFilter)  users = users.filter(u => u.hair_type === htFilter);
+  if (genFilter) users = users.filter(u => u.gender    === genFilter);
+  if (!users.length) { el.innerHTML = '<div class="empty"><div class="empty-ico">👥</div><div>No users found</div></div>'; return; }
+
+  el.innerHTML = `<div class="tbl-wrap"><table>
+    <thead><tr>
+      <th>User ID</th><th>Hair Type</th><th>Mode</th><th>Gender</th><th>Age</th><th>Goals</th><th>Challenge</th><th>Joined</th><th>Last seen</th>
+    </tr></thead>
+    <tbody>
+    ${users.map(u => `<tr>
+      <td><span class="uid-badge">${u.id.slice(0,8)}…</span></td>
+      <td><span class="badge badge-tl">${u.hair_type||'—'}</span></td>
+      <td><span class="badge ${u.hair_mode==='styled'?'badge-pk':'badge-gr'}">${u.hair_mode||'—'}</span></td>
+      <td>${u.gender||'—'}</td>
+      <td>${u.age||'—'}</td>
+      <td style="max-width:180px;font-size:10px">${(u.goals||[]).join(', ')||'—'}</td>
+      <td style="max-width:120px;font-size:10px">${u.challenge||'—'}</td>
+      <td style="font-size:10px;color:var(--tx3)">${fmtDate(u.created_at)}</td>
+      <td style="font-size:10px;color:var(--tx3)">${fmtDate(u.last_seen)}</td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+// ── CHECK-INS ──────────────────────────────────────────────────────────────
+function renderCheckins() {
+  const el = document.getElementById('checkinsList');
+  const typeFilter = (document.getElementById('filterCiType') || {}).value || '';
+  let rows = DB.checkins;
+  if (typeFilter) rows = rows.filter(r => r.type === typeFilter);
+  if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-ico">📋</div><div>No check-ins yet</div></div>'; return; }
+
+  const typeColors = { wash:'badge-tl', takedown:'badge-pk', braids:'badge-or', moisturise:'badge-gr', nutrition:'badge-gd', mh:'badge-rd' };
+  const typeLabels = { wash:'Wash Day', takedown:'Take-Down', braids:'Style Install', moisturise:'Moisturise', nutrition:'Nutrition', mh:'Wellbeing' };
+
+  el.innerHTML = `<div class="tbl-wrap"><table>
+    <thead><tr><th>User</th><th>Type</th><th>Date</th><th>Key Answers</th></tr></thead>
+    <tbody>
+    ${rows.map(r => {
+      const ans = r.answers || {};
+      // Pull the top 3 most informative answers
+      const keyPairs = Object.entries(ans)
+        .filter(([k]) => !k.includes('note') && !k.includes('product_combo'))
+        .slice(0,3)
+        .map(([k, v]) => {
+          const display = typeof v === 'object' ? JSON.stringify(v) : String(v);
+          return `<span style="font-size:9px;background:var(--surf);border-radius:5px;padding:1px 5px;margin:1px;display:inline-block;color:var(--tx2)"><strong style="color:var(--tx3)">${k.replace(/_/g,' ')}</strong>: ${display.slice(0,30)}</span>`;
+        }).join('');
+      return `<tr>
+        <td><span class="uid-badge">${(r.user_id||'').slice(0,8)}…</span></td>
+        <td><span class="badge ${typeColors[r.type]||'badge-tl'}">${typeLabels[r.type]||r.type}</span></td>
+        <td style="font-size:10px;color:var(--tx3)">${r.date||fmtDate(r.created_at)}</td>
+        <td>${keyPairs||'—'}</td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+// ── MH CHECK-INS ───────────────────────────────────────────────────────────
+function renderMH() {
+  const el = document.getElementById('mhList');
+  const rows = DB.mh;
+  if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-ico">🧠</div><div>No wellbeing check-ins yet</div></div>'; return; }
+
+  el.innerHTML = `<div class="tbl-wrap"><table>
+    <thead><tr><th>User</th><th>Date</th><th>Stress</th><th>Sleep</th><th>Mood</th><th>Hair Link</th><th>All Answers</th></tr></thead>
+    <tbody>
+    ${rows.map(r => {
+      const ans = r.answers || {};
+      const stress  = ans.stress  ? scoreBar(ans.stress,  5, 'var(--rd)') : '—';
+      const sleep   = ans.sleep   ? scoreBar(ans.sleep,   5, 'var(--tl)') : '—';
+      const mood    = ans.mood    ? scoreBar(ans.mood,    5, 'var(--gr)') : '—';
+      const hairLink= ans.hair_link? scoreBar(ans.hair_link,5,'var(--pk)')  : '—';
+      return `<tr>
+        <td><span class="uid-badge">${(r.user_id||'').slice(0,8)}…</span></td>
+        <td style="font-size:10px;color:var(--tx3)">${r.date||fmtDate(r.created_at)}</td>
+        <td>${stress}</td><td>${sleep}</td><td>${mood}</td><td>${hairLink}</td>
+        <td style="font-size:9px;color:var(--tx3)">${JSON.stringify(ans).slice(0,80)}…</td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+// ── TESTS ──────────────────────────────────────────────────────────────────
+function renderTests() {
+  const el = document.getElementById('testsList');
+  const testFilter = (document.getElementById('filterTest') || {}).value || '';
+  let rows = DB.tests;
+  if (testFilter) rows = rows.filter(r => r.test_id === testFilter);
+  if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-ico">🔬</div><div>No test results yet</div></div>'; return; }
+
+  // Count results by test and result value
+  const breakdown = {};
+  rows.forEach(r => {
+    const key = r.test_id + ':' + r.result_val;
+    breakdown[key] = (breakdown[key]||0) + 1;
+  });
+
+  el.innerHTML = `<div class="tbl-wrap"><table>
+    <thead><tr><th>User</th><th>Test</th><th>Result</th><th>Date</th></tr></thead>
+    <tbody>
+    ${rows.map(r => {
+      const rColor = { high:'badge-rd', normal:'badge-gr', low:'badge-tl', fine:'badge-pk',
+        medium:'badge-gr', coarse:'badge-or', protein:'badge-rd', healthy:'badge-gr',
+        moisture:'badge-tl', oily:'badge-gd', balanced:'badge-gr', dry:'badge-rd', flaky:'badge-or',
+      }[r.result_val] || 'badge-tl';
+      return `<tr>
+        <td><span class="uid-badge">${(r.user_id||'').slice(0,8)}…</span></td>
+        <td style="font-size:11px;color:var(--tx)">${r.test_id||'—'}</td>
+        <td><span class="badge ${rColor}">${r.result_val||r.result||'—'}</span></td>
+        <td style="font-size:10px;color:var(--tx3)">${r.date||fmtDate(r.created_at)}</td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+// ── PRODUCTS ───────────────────────────────────────────────────────────────
+function renderProducts() {
+  const el = document.getElementById('productsList');
+  const catFilter = (document.getElementById('filterProdCat') || {}).value || '';
+  let rows = DB.products;
+  if (catFilter) rows = rows.filter(r => r.category === catFilter);
+  if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-ico">🧴</div><div>No products logged yet</div></div>'; return; }
+
+  // Most used products
+  const prodCount = {};
+  rows.forEach(r => { prodCount[r.name] = (prodCount[r.name]||0)+1; });
+  const top = Object.entries(prodCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  let html = `<div class="section-title">Most Common Products</div>
+    <div class="bar-chart">`;
+  const maxCount = top[0]?.[1] || 1;
+  top.forEach(([name, count]) => {
+    html += `<div class="bar-row">
+      <div class="bar-lbl">${name.slice(0,24)}</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(count/maxCount*100)}%"></div></div>
+      <div class="bar-val">${count}</div>
+    </div>`;
+  });
+  html += `</div>
+  <div class="section-title" style="margin-top:16px">All Products</div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>User</th><th>Name</th><th>Brand</th><th>Category</th><th>Rating</th><th>Concerns</th><th>Notes</th><th>Price</th></tr></thead>
+    <tbody>
+    ${rows.map(r => {
+      const stars = '★'.repeat(r.rating||0)+'☆'.repeat(5-(r.rating||0));
+      return `<tr>
+        <td><span class="uid-badge">${(r.user_id||'').slice(0,8)}…</span></td>
+        <td style="font-size:11px;color:var(--tx);font-weight:700">${r.name||'—'}</td>
+        <td style="color:var(--tx3)">${r.brand||'—'}</td>
+        <td><span class="badge badge-tl">${r.category||'—'}</span></td>
+        <td style="color:var(--gd2);font-size:12px">${stars}</td>
+        <td style="font-size:9px">${(r.concerns||[]).join(', ')||'—'}</td>
+        <td style="font-size:10px;color:var(--tx3);max-width:120px">${r.notes||'—'}</td>
+        <td style="color:var(--gd2)">${r.price?'R'+r.price:'—'}</td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table></div>`;
+  el.innerHTML = html;
+}
+
+// ── WASH DAYS ──────────────────────────────────────────────────────────────
+function renderWashdays() {
+  const el = document.getElementById('washdaysList');
+  const rows = DB.washdays;
+  if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-ico">🚿</div><div>No wash days logged yet</div></div>'; return; }
+
+  el.innerHTML = `<div class="tbl-wrap"><table>
+    <thead><tr><th>User</th><th>Date</th><th>Steps</th><th>Shampoo</th><th>Deep Conditioner</th><th>Leave-in</th></tr></thead>
+    <tbody>
+    ${rows.map(r => {
+      const d = r.data || {};
+      return `<tr>
+        <td><span class="uid-badge">${(r.user_id||'').slice(0,8)}…</span></td>
+        <td style="font-size:10px;color:var(--tx3)">${r.date||fmtDate(r.created_at)}</td>
+        <td><span class="badge badge-tl">${r.steps_count||0} steps</span></td>
+        <td style="font-size:10px">${d.shampoo_product||'—'}</td>
+        <td style="font-size:10px">${d.dc_product||'—'}</td>
+        <td style="font-size:10px">${d.leavein_product||'—'}</td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+// ── STYLE INSTALLS ─────────────────────────────────────────────────────────
+function renderInstalls() {
+  const el = document.getElementById('installsList');
+  const rows = DB.installs;
+  if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-ico">🧶</div><div>No installs logged yet</div></div>'; return; }
+
+  el.innerHTML = `<div class="tbl-wrap"><table>
+    <thead><tr><th>User</th><th>Style</th><th>Date</th><th>Max Weeks</th><th>Stylist</th><th>Tension</th><th>Edges</th><th>Notes</th></tr></thead>
+    <tbody>
+    ${rows.map(r => {
+      const tensionLabel = ['—','Too tight','Slightly tight','Comfortable','No tension'][r.tension||0]||'—';
+      const edgesLabel   = ['—','Already stressed','Some tension','Healthy','Left free'][r.edges||0]||'—';
+      const tCol = r.tension === 1 ? 'var(--rd2)' : r.tension === 2 ? 'var(--or2)' : 'var(--gr2)';
+      return `<tr>
+        <td><span class="uid-badge">${(r.user_id||'').slice(0,8)}…</span></td>
+        <td style="font-size:11px;color:var(--tx);font-weight:700">${r.style||'—'}</td>
+        <td style="font-size:10px;color:var(--tx3)">${r.date||'—'}</td>
+        <td><span class="badge badge-or">${r.max_days ? Math.ceil(r.max_days/7)+' wks' : '—'}</span></td>
+        <td style="font-size:10px">${r.stylist||'—'}</td>
+        <td style="font-size:10px;color:${tCol};font-weight:700">${tensionLabel}</td>
+        <td style="font-size:10px">${edgesLabel}</td>
+        <td style="font-size:10px;color:var(--tx3);max-width:120px">${r.notes||'—'}</td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+// ── INSIGHTS ────────────────────────────────────────────────────────────────
+function renderInsights() {
+  const el = document.getElementById('insightsContent');
+  if (!DB.users.length) { el.innerHTML = '<div class="empty"><div class="empty-ico">📊</div><div>Connect to view insights</div></div>'; return; }
+
+  // Hair type distribution
+  const htCount = {};
+  DB.users.forEach(u => { htCount[u.hair_type||'Unknown'] = (htCount[u.hair_type||'Unknown']||0)+1; });
+  const htTop = Object.entries(htCount).sort((a,b)=>b[1]-a[1]);
+  const htMax = htTop[0]?.[1]||1;
+
+  // Test result distribution — porosity
+  const porosity = {};
+  DB.tests.filter(t=>t.test_id==='porosity').forEach(t=>{ porosity[t.result_val] = (porosity[t.result_val]||0)+1; });
+
+  // Common challenges
+  const challenges = {};
+  DB.users.forEach(u => { if(u.challenge) challenges[u.challenge] = (challenges[u.challenge]||0)+1; });
+  const chTop = Object.entries(challenges).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const chMax = chTop[0]?.[1]||1;
+
+  // Avg style tension
+  const tensions = DB.installs.filter(i=>i.tension).map(i=>i.tension);
+  const avgTension = tensions.length ? (tensions.reduce((a,b)=>a+b,0)/tensions.length).toFixed(1) : '—';
+
+  // Top rated products
+  const topProds = [...DB.products].sort((a,b)=>(b.rating||0)-(a.rating||0)).slice(0,5);
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div>
+        <div class="section-title">Hair Type Distribution</div>
+        <div class="bar-chart">
+          ${htTop.map(([ht, n]) => `
+            <div class="bar-row">
+              <div class="bar-lbl"><span class="badge badge-tl">${ht}</span></div>
+              <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(n/htMax*100)}%"></div></div>
+              <div class="bar-val">${n}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div class="section-title">Biggest Challenges</div>
+        <div class="bar-chart">
+          ${chTop.map(([ch, n]) => `
+            <div class="bar-row">
+              <div class="bar-lbl" style="font-size:9px">${ch.slice(0,22)}</div>
+              <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(n/chMax*100)}%;background:linear-gradient(90deg,var(--pk),var(--or))"></div></div>
+              <div class="bar-val">${n}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div>
+        <div class="section-title">Porosity Test Results</div>
+        ${Object.keys(porosity).length ? `<div class="bar-chart">
+          ${Object.entries(porosity).map(([v,n])=>`
+            <div class="bar-row">
+              <div class="bar-lbl"><span class="badge ${v==='high'?'badge-rd':v==='normal'?'badge-gr':'badge-tl'}">${v}</span></div>
+              <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(n/Math.max(...Object.values(porosity))*100)}%;background:linear-gradient(90deg,var(--tl),var(--tl2))"></div></div>
+              <div class="bar-val">${n}</div>
+            </div>`).join('')}
+        </div>` : '<div style="font-size:11px;color:var(--tx3);padding:10px">No porosity tests yet</div>'}
+      </div>
+      <div>
+        <div class="section-title">Top Rated Products</div>
+        ${topProds.map(p => `
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--brd)">
+            <div style="flex:1;font-size:11px;color:var(--tx);font-weight:700">${p.name}</div>
+            <div style="font-size:10px;color:var(--gd2)">${'★'.repeat(p.rating||0)}</div>
+            <div style="font-size:9px;color:var(--tx3)">${p.category||'—'}</div>
+          </div>`).join('')||'<div style="font-size:11px;color:var(--tx3);padding:10px">No products rated yet</div>'}
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
+      <div class="stat-card"><div class="stat-val">${DB.checkins.filter(c=>c.type==='wash').length}</div><div class="stat-lbl">Post-Wash Check-ins</div></div>
+      <div class="stat-card"><div class="stat-val">${DB.checkins.filter(c=>c.type==='takedown').length}</div><div class="stat-lbl">Post Take-Down Reviews</div></div>
+      <div class="stat-card" style="border-color:rgba(212,80,106,.3)"><div class="stat-val" style="color:var(--pk2)">${avgTension}</div><div class="stat-lbl">Avg Style Tension (1–4)</div></div>
+      <div class="stat-card"><div class="stat-val">${DB.mh.length}</div><div class="stat-lbl">Wellbeing Check-ins</div></div>
+    </div>`;
+}
+
+// ── TABS ────────────────────────────────────────────────────────────────────
+const panels = ['users','checkins','mh','tests','products','washdays','installs','insights','correlation','world','requests','releases'];
+function showTab(id, btn) {
+  panels.forEach(p => {
+    const el = document.getElementById('panel' + cap(p));
+    if (el) el.style.display = p === id ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// ── EXPORT ──────────────────────────────────────────────────────────────────
+function exportAll() {
+  const rows = [];
+  DB.users.forEach(u => {
+    rows.push({ sheet:'users', ...u });
+  });
+  DB.checkins.forEach(r => {
+    rows.push({ sheet:'checkins', user_id:r.user_id, type:r.type, date:r.date, answers:JSON.stringify(r.answers||{}), created_at:r.created_at });
+  });
+  DB.tests.forEach(r => {
+    rows.push({ sheet:'tests', user_id:r.user_id, test_id:r.test_id, result:r.result, result_val:r.result_val, date:r.date });
+  });
+  DB.products.forEach(r => {
+    rows.push({ sheet:'products', user_id:r.user_id, name:r.name, brand:r.brand, category:r.category, rating:r.rating, notes:r.notes });
+  });
+
+  const cols = [...new Set(rows.flatMap(r => Object.keys(r)))];
+  const csv  = [cols.join(','), ...rows.map(r => cols.map(c => JSON.stringify(r[c]||'')).join(','))].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'allnatural-research-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+// ── HELPERS ─────────────────────────────────────────────────────────────────
+function fmtDate(iso) {
+  if (!iso) return '—';
+  try { return new Date(iso).toLocaleDateString('en-ZA', {day:'numeric',month:'short',year:'numeric'}); }
+  catch { return iso.slice(0,10); }
+}
+function scoreBar(val, max, color) {
+  const pct = Math.round(val/max*100);
+  return `<div style="display:flex;align-items:center;gap:4px">
+    <div style="width:50px;height:8px;background:var(--surf);border-radius:4px;overflow:hidden">
+      <div style="height:100%;border-radius:4px;background:${color};width:${pct}%"></div>
+    </div>
+    <span style="font-size:10px;font-weight:700;color:${color}">${val}/${max}</span>
+  </div>`;
+}
+
+
+function renderCorrelation() {
+  const el = document.getElementById('correlationContent');
+  if (!el) return;
+  const supps   = DB.installs || [];
+  const checkins = DB.checkins || [];
+  const weekly   = checkins.filter(c => c.type === 'moisturise' || c.type === 'wash');
+
+  if (!DB.supplementLog || !DB.supplementLog.length) {
+    // Use supplement start events + post-install checkins
+  }
+
+  // Group users by supplement usage
+  // For each user: find supplement start date, then compare avg ratings before vs after
+  const userSupps = {};
+  DB.products.forEach(p => {
+    if (!userSupps[p.user_id]) userSupps[p.user_id] = [];
+    userSupps[p.user_id].push(p);
+  });
+
+  // Correlation: supplement category vs average product rating
+  const catRatings = {};
+  DB.products.forEach(p => {
+    if (!p.category || !p.rating) return;
+    if (!catRatings[p.category]) catRatings[p.category] = [];
+    catRatings[p.category].push(p.rating);
+  });
+  const catAvg = Object.entries(catRatings).map(([cat, ratings]) => ({
+    cat, avg: (ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(2), count: ratings.length
+  })).sort((a,b)=>b.avg-a.avg);
+
+  // Post wash checkin scores
+  const washScores = DB.checkins.filter(c=>c.type==='wash').map(c=>{
+    const ans = c.answers || {};
+    const vals = Object.values(ans).filter(v=>v&&typeof v.val==='number').map(v=>v.val);
+    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+  }).filter(Boolean);
+  const avgWashScore = washScores.length ? (washScores.reduce((a,b)=>a+b,0)/washScores.length).toFixed(2) : '—';
+
+  // Tension analysis
+  const tensionLow  = DB.installs.filter(i=>i.tension<=2).length;
+  const tensionHigh = DB.installs.filter(i=>i.tension>=3).length;
+
+  el.innerHTML = `
+  <div class="section-title">Best-rated product categories</div>
+  <div class="tbl-wrap" style="margin-bottom:16px"><table>
+    <thead><tr><th>Category</th><th>Avg Rating</th><th>Products logged</th><th>Visual</th></tr></thead>
+    <tbody>
+    ${catAvg.map(c=>`<tr>
+      <td><span class="badge badge-tl">${c.cat}</span></td>
+      <td style="font-size:13px;font-weight:800;color:var(--gd2)">${c.avg}/5</td>
+      <td>${c.count}</td>
+      <td><div style="width:${Math.round(parseFloat(c.avg)/5*120)}px;height:8px;background:linear-gradient(90deg,var(--or),var(--pk));border-radius:4px"></div></td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>
+
+  <div class="section-title">Post-wash day health scores</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+    <div class="stat-card"><div class="stat-val">${avgWashScore}</div><div class="stat-lbl">Avg wash score</div></div>
+    <div class="stat-card"><div class="stat-val">${washScores.length}</div><div class="stat-lbl">Wash check-ins</div></div>
+    <div class="stat-card"><div class="stat-val">${DB.checkins.filter(c=>c.type==='takedown').length}</div><div class="stat-lbl">Take-downs logged</div></div>
+  </div>
+
+  <div class="section-title">Tension risk in style installs</div>
+  <div style="display:flex;gap:10px;margin-bottom:16px">
+    <div class="stat-card" style="border-color:rgba(200,64,64,.3)"><div class="stat-val" style="color:var(--rd2)">${tensionLow}</div><div class="stat-lbl">High tension installs</div></div>
+    <div class="stat-card" style="border-color:rgba(90,158,120,.3)"><div class="stat-val" style="color:var(--gr2)">${tensionHigh}</div><div class="stat-lbl">Safe tension installs</div></div>
+    <div class="stat-card"><div class="stat-val">${DB.installs.length?Math.round(tensionLow/DB.installs.length*100)+'%':'—'}</div><div class="stat-lbl">High tension rate</div></div>
+  </div>
+
+  ${tensionLow/Math.max(1,DB.installs.length) > 0.3 ? `
+  <div style="background:rgba(200,64,64,.08);border:1px solid rgba(200,64,64,.3);border-radius:10px;padding:12px;margin-bottom:14px">
+    <div style="font-size:10px;font-weight:700;color:var(--rd2);margin-bottom:5px">⚠️ Research note</div>
+    <div style="font-size:11px;color:var(--tx2);line-height:1.65">Over 30% of installs in your group show high tension. Traction alopecia is cumulative — consider adding education on protective style tension in your app or community.</div>
+  </div>` : ''}
+  `;
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+loadConfig();
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   ADMIN — World Map, Requests, Releases, Google Insights
+══════════════════════════════════════════════════════════════════════ */
+
+/* ── NOTIFICATION BADGE ────────────────────────────────────────────── */
+function updateRequestsBadge() {
+  const pending = (DB.betaReqs || []).filter(r => r.status === 'pending').length;
+  const blocked = (DB.accessReqs || []).length;
+  const total   = pending + blocked;
+  const tab = document.getElementById('tabRequests');
+  if (!tab) return;
+  tab.innerHTML = total > 0
+    ? `🔔 Requests <span style="background:var(--rd);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:800;margin-left:4px">${total}</span>`
+    : '🔔 Requests';
+}
+
+/* ── WORLD MAP ─────────────────────────────────────────────────────── */
+// Map user timezones → approximate world regions → plot on SVG map
+const TIMEZONE_REGIONS = {
+  // Africa
+  'Africa/Johannesburg':{ r:'Southern Africa', x:52, y:65 },
+  'Africa/Lagos':       { r:'West Africa',     x:47, y:55 },
+  'Africa/Nairobi':     { r:'East Africa',     x:55, y:55 },
+  'Africa/Accra':       { r:'West Africa',     x:46, y:54 },
+  'Africa/Cairo':       { r:'North Africa',    x:53, y:44 },
+  'Africa/Casablanca':  { r:'North Africa',    x:47, y:42 },
+  'Africa/Abidjan':     { r:'West Africa',     x:46, y:54 },
+  // Europe
+  'Europe/London':      { r:'UK / Europe',     x:48, y:36 },
+  'Europe/Paris':       { r:'UK / Europe',     x:49, y:37 },
+  'Europe/Berlin':      { r:'UK / Europe',     x:51, y:36 },
+  'Europe/Amsterdam':   { r:'UK / Europe',     x:50, y:36 },
+  'Europe/Lisbon':      { r:'UK / Europe',     x:47, y:38 },
+  // Americas
+  'America/New_York':   { r:'USA East',        x:26, y:40 },
+  'America/Chicago':    { r:'USA Central',     x:23, y:40 },
+  'America/Los_Angeles':{ r:'USA West',        x:18, y:40 },
+  'America/Toronto':    { r:'Canada',          x:25, y:37 },
+  // Caribbean / diaspora
+  'America/Jamaica':    { r:'Caribbean',       x:28, y:48 },
+  'America/Trinidad':   { r:'Caribbean',       x:30, y:50 },
+  // Australasia
+  'Australia/Sydney':   { r:'Australia',       x:82, y:70 },
+  'Pacific/Auckland':   { r:'New Zealand',     x:87, y:74 },
+};
+
+function getRegionFromUser(user) {
+  // Users may have timezone in their profile — fallback to 'Unknown'
+  const tz = user.timezone || '';
+  if (TIMEZONE_REGIONS[tz]) return TIMEZONE_REGIONS[tz];
+  // Guess from last_seen if TZ not stored
+  return { r: 'Unknown', x: 50, y: 50 };
+}
+
+
+function renderWorldMap() {
+  const wrap      = document.getElementById('worldMapWrap');
+  const breakdown = document.getElementById('worldRegionBreakdown');
+  if (!wrap) return;
+  const users = DB.users || [];
+  const total = users.length;
+  const regionCounts = {};
+  users.forEach(u => { const r = u.region||'Africa'; regionCounts[r]=(regionCounts[r]||0)+1; });
+  if (!Object.keys(regionCounts).length && total>0) regionCounts['Africa']=total;
+
+  // Equirectangular projection helpers
+  // viewBox 0 0 1000 520
+  // lon -168..+178 → x 0..1000   lat +83..-57 → y 0..520
+  const px = lon => Math.round((lon + 168) / 346 * 1000);
+  const py = lat => Math.round((83 - lat) / 140 * 520);
+
+  // ── SVG paths traced from the clean outline reference image ──────────
+  // Each continent traced as a single closed path (lon,lat pairs → px/py)
+
+  // NORTH AMERICA — traced clockwise from Alaska
+  const NA = [
+    [-168,71],[-158,72],[-140,70],[-120,74],[-100,73],[-85,68],[-75,63],
+    [-65,63],[-60,47],[-55,47],[-62,45],[-70,44],[-76,35],[-80,25],
+    [-83,30],[-90,30],[-97,26],[-105,23],[-110,23],[-118,29],[-118,34],
+    [-122,37],[-124,41],[-124,47],[-130,55],[-135,60],[-145,60],
+    [-152,60],[-162,60],[-165,65],[-168,66]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // MEXICO + CENTRAL AMERICA
+  const MX = [
+    [-97,26],[-90,21],[-88,16],[-84,10],[-80,8],[-77,8],[-77,9],
+    [-83,10],[-85,12],[-87,16],[-91,19],[-97,20],[-105,23],[-110,23],
+    [-118,29],[-118,24],[-110,23],[-105,23],[-97,26]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // GREENLAND
+  const GL = [
+    [-70,83],[-50,83],[-20,76],[-18,70],[-22,65],[-35,65],[-50,68],
+    [-58,70],[-65,72],[-68,76],[-70,80]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // SOUTH AMERICA — traced from Colombia clockwise
+  const SA = [
+    [-77,8],[-75,11],[-63,11],[-60,6],[-52,4],[-50,0],[-35,-4],
+    [-35,-8],[-38,-13],[-40,-20],[-42,-24],[-44,-23],[-47,-24],
+    [-48,-28],[-52,-33],[-54,-34],[-58,-38],[-62,-42],[-66,-50],
+    [-68,-54],[-70,-56],[-68,-55],[-65,-50],[-62,-40],[-57,-35],
+    [-52,-32],[-48,-28],[-44,-24],[-42,-22],[-40,-19],[-38,-12],
+    [-36,-6],[-35,-4],[-44,0],[-50,2],[-54,4],[-60,6],[-62,11],
+    [-72,12],[-75,10],[-77,8]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // EUROPE — traced counterclockwise
+  const EU = [
+    [-10,36],[-8,44],[-2,44],[2,43],[5,43],[8,44],[12,44],[14,41],
+    [16,38],[18,40],[22,38],[26,38],[28,41],[30,46],[28,47],[24,47],
+    [20,47],[18,47],[16,48],[12,48],[8,48],[6,51],[4,52],[5,54],
+    [8,55],[12,56],[10,58],[5,59],[5,62],[7,63],[14,65],[16,68],
+    [14,70],[20,70],[24,72],[20,74],[16,74],[12,70],[6,62],[2,57],
+    [-2,57],[-6,58],[-8,54],[-6,50],[-2,49],[0,46],[2,43],[-2,37],
+    [-6,37],[-8,36],[-10,36]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // BRITISH ISLES
+  const UK = [
+    [-6,58],[-4,55],[-3,52],[-5,50],[-2,51],[0,52],[1,53],[-1,56],
+    [-4,58],[-5,58],[-6,58]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // AFRICA — traced clockwise from north-west
+  const AF = [
+    [-18,14],[-12,14],[-8,14],[-2,14],[2,14],[8,12],[12,13],
+    [14,12],[16,10],[12,4],[2,-1],[-2,-2],[-8,2],[-14,8],[-18,14],
+    // back up east coast
+    [-16,16],[-14,20],[-12,24],[-8,28],[-5,31],
+    [2,32],[10,36],[12,38],[18,36],[22,32],[26,32],[30,30],[34,28],
+    [36,22],[40,16],[42,12],[42,8],[40,4],[36,0],[34,-4],[36,-10],
+    [34,-14],[32,-20],[28,-24],[24,-28],[20,-34],[18,-34],[16,-32],
+    [14,-28],[12,-24],[10,-20],[8,-16],[4,-12],[0,-10],[-4,-6],
+    [-8,-2],[-12,2],[-14,8],[-18,14]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // MADAGASCAR
+  const MG = [
+    [44,-13],[46,-12],[50,-16],[50,-20],[48,-24],[44,-26],[42,-24],
+    [44,-18],[44,-13]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // ASIA — main body (simplified but accurate)
+  const AS = [
+    [26,38],[30,42],[36,42],[40,38],[42,38],[44,38],[48,40],[52,42],
+    [54,46],[58,46],[62,48],[66,52],[70,54],[74,54],[80,56],[88,54],
+    [92,56],[100,56],[104,58],[110,60],[114,62],[120,62],[126,60],
+    [130,56],[134,48],[136,46],[138,40],[140,38],[140,36],[138,34],
+    [136,34],[130,32],[126,28],[124,24],[120,22],[114,22],[108,20],
+    [104,18],[100,16],[100,14],[104,12],[104,6],[100,4],[104,2],
+    [108,2],[110,2],[116,6],[120,10],[120,20],[116,22],[110,20],
+    [108,20],[104,16],[100,14],[98,16],[96,16],[94,18],[92,22],
+    [90,22],[88,22],[86,28],[82,28],[80,22],[78,18],[76,14],[78,8],
+    [80,10],[84,14],[86,20],[88,22],[90,22],[92,20],[90,14],[86,8],
+    [82,8],[78,8],[76,8],[74,8],[72,4],[68,4],[64,4],[60,4],
+    [58,6],[54,8],[52,14],[50,16],[48,18],[46,18],[44,18],[42,14],
+    [40,12],[40,8],[44,8],[46,8],[48,6],[48,2],[46,-2],[42,-2],
+    [40,0],[38,4],[36,4],[34,8],[32,12],[30,16],[30,24],[28,32],
+    [26,34],[26,38]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // ARABIAN PENINSULA
+  const AR = [
+    [32,28],[36,24],[40,20],[44,16],[50,12],[56,12],[60,16],[56,20],
+    [52,24],[48,28],[44,28],[40,28],[36,28],[32,28]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // AUSTRALIA
+  const AU = [
+    [114,-22],[114,-28],[116,-34],[118,-34],[122,-34],[124,-34],
+    [126,-34],[128,-34],[130,-32],[132,-32],[134,-30],[136,-30],
+    [138,-32],[140,-36],[142,-38],[144,-38],[146,-38],[148,-38],
+    [150,-36],[152,-28],[152,-24],[150,-22],[148,-20],[144,-18],
+    [142,-14],[138,-14],[134,-12],[130,-14],[126,-18],[122,-22],
+    [118,-22],[114,-22]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // NEW ZEALAND
+  const NZ = [
+    [168,-46],[170,-44],[172,-42],[174,-40],[176,-40],[178,-38],
+    [178,-42],[174,-44],[172,-46],[170,-46],[168,-46]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // JAPAN (simplified)
+  const JP = [
+    [130,32],[132,33],[134,34],[136,35],[136,36],[134,35],[132,34],[130,32]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // PHILIPPINES
+  const PH = [
+    [118,18],[120,18],[122,16],[122,14],[120,12],[118,14],[118,18]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // INDONESIA (Sumatra+Java simplified)
+  const ID = [
+    [96,4],[100,2],[104,0],[108,-2],[112,-6],[116,-8],[108,-8],
+    [104,-4],[100,-2],[96,2],[96,4]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // SCANDINAVIA separate
+  const SC = [
+    [5,58],[8,56],[10,56],[12,58],[14,60],[16,62],[16,66],[18,68],
+    [18,70],[22,70],[26,70],[28,68],[26,65],[22,62],[18,60],[14,58],
+    [10,58],[6,58],[5,58]
+  ].map(([lo,la])=>`${px(lo)},${py(la)}`).join(' ');
+
+  // User dot position — Africa centroid
+  const userX = px(18); const userY = py(-5);
+  const userR  = Math.min(28, 8 + total * 2.5);
+
+  wrap.innerHTML = `
+  <div style="background:linear-gradient(135deg,#1C0F09,#0F0A06);border:1px solid #4A3020;border-radius:14px;padding:16px">
+    <div style="position:relative;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 6px 32px rgba(0,0,0,.7)">
+      <svg viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+        <defs>
+          <radialGradient id="oceanGrad" cx="50%" cy="50%" r="70%">
+            <stop offset="0%" stop-color="#0D2030"/>
+            <stop offset="100%" stop-color="#060E18"/>
+          </radialGradient>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="softglow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- Ocean -->
+        <rect width="1000" height="520" fill="url(#oceanGrad)"/>
+        <!-- Subtle grid lines -->
+        <line x1="0" y1="260" x2="1000" y2="260" stroke="rgba(100,160,200,.08)" stroke-width="1"/>
+        <line x1="500" y1="0"   x2="500"   y2="520" stroke="rgba(100,160,200,.08)" stroke-width="1"/>
+        <line x1="0" y1="130" x2="1000" y2="130" stroke="rgba(100,160,200,.04)" stroke-width=".5"/>
+        <line x1="0" y1="390" x2="1000" y2="390" stroke="rgba(100,160,200,.04)" stroke-width=".5"/>
+
+        <!-- ── CONTINENTS — filled using app palette ── -->
+
+        <!-- Greenland -->
+        <polygon points="${GL}" fill="#3A5A2A" stroke="#5A8A3A" stroke-width="1.5" stroke-linejoin="round"/>
+
+        <!-- North America -->
+        <polygon points="${NA}" fill="#C89848" stroke="#E0BC70" stroke-width="1.8" stroke-linejoin="round"/>
+        <!-- Mexico / Central America -->
+        <polygon points="${MX}" fill="#A07030" stroke="#C89848" stroke-width="1.2" stroke-linejoin="round"/>
+
+        <!-- South America -->
+        <polygon points="${SA}" fill="#5A9E78" stroke="#78C898" stroke-width="1.8" stroke-linejoin="round"/>
+
+        <!-- Europe (main) -->
+        <polygon points="${EU}" fill="#5A7098" stroke="#7A9AC8" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- Scandinavia -->
+        <polygon points="${SC}" fill="#4A6088" stroke="#7A9AC8" stroke-width="1.2" stroke-linejoin="round"/>
+        <!-- British Isles -->
+        <polygon points="${UK}" fill="#4A6088" stroke="#7A9AC8" stroke-width="1" stroke-linejoin="round"/>
+
+        <!-- Africa — highlighted, warm gold -->
+        <polygon points="${AF}" fill="#C87840" stroke="#E8A060" stroke-width="2" stroke-linejoin="round"/>
+        <!-- Madagascar -->
+        <polygon points="${MG}" fill="#B86830" stroke="#D89050" stroke-width="1.2" stroke-linejoin="round"/>
+
+        <!-- Asia (main) -->
+        <polygon points="${AS}" fill="#7A9848" stroke="#A0C868" stroke-width="1.8" stroke-linejoin="round"/>
+        <!-- Arabian Peninsula -->
+        <polygon points="${AR}" fill="#C8A840" stroke="#E0C860" stroke-width="1.2" stroke-linejoin="round"/>
+        <!-- Japan -->
+        <polygon points="${JP}" fill="#888848" stroke="#A0A068" stroke-width="1" stroke-linejoin="round"/>
+        <!-- Philippines -->
+        <polygon points="${PH}" fill="#688870" stroke="#88A888" stroke-width="1" stroke-linejoin="round"/>
+        <!-- Indonesia -->
+        <polygon points="${ID}" fill="#688858" stroke="#88A878" stroke-width="1.2" stroke-linejoin="round"/>
+
+        <!-- Australia -->
+        <polygon points="${AU}" fill="#A85838" stroke="#D07858" stroke-width="1.8" stroke-linejoin="round"/>
+        <!-- New Zealand -->
+        <polygon points="${NZ}" fill="#986848" stroke="#B88868" stroke-width="1" stroke-linejoin="round"/>
+
+        <!-- ── USER DOT ON AFRICA ── -->
+        ${total > 0 ? `
+        <g filter="url(#glow)">
+          <circle cx="${userX}" cy="${userY}" r="${userR + 10}" fill="rgba(232,112,58,.15)"/>
+          <circle cx="${userX}" cy="${userY}" r="${userR}" fill="rgba(232,112,58,.4)" stroke="rgba(232,112,58,.8)" stroke-width="1.5"/>
+          <circle cx="${userX}" cy="${userY}" r="${Math.max(8, userR * 0.5)}" fill="#E8703A"/>
+          <text x="${userX}" y="${userY + 4}" text-anchor="middle" font-size="10" font-family="Nunito,sans-serif" font-weight="800" fill="#fff">${total}</text>
+        </g>` : ''}
+
+        <!-- ── REGION LABELS ── -->
+        <text x="${px(-100)}" y="${py(50)}"  text-anchor="middle" font-size="9" font-family="Nunito,sans-serif" font-weight="700" fill="rgba(200,168,128,.5)">CANADA</text>
+        <text x="${px(-100)}" y="${py(38)}"  text-anchor="middle" font-size="9" font-family="Nunito,sans-serif" font-weight="700" fill="rgba(200,168,128,.5)">USA</text>
+        <text x="${px(-58)}"  y="${py(-15)}" text-anchor="middle" font-size="8" font-family="Nunito,sans-serif" font-weight="700" fill="rgba(200,168,128,.5)">BRAZIL</text>
+        <text x="${px(12)}"   y="${py(12)}"  text-anchor="middle" font-size="9" font-family="Nunito,sans-serif" font-weight="800" fill="rgba(240,200,120,.7)">AFRICA</text>
+        <text x="${px(30)}"   y="${py(56)}"  text-anchor="middle" font-size="8" font-family="Nunito,sans-serif" font-weight="700" fill="rgba(200,168,128,.5)">EUROPE</text>
+        <text x="${px(80)}"   y="${py(45)}"  text-anchor="middle" font-size="9" font-family="Nunito,sans-serif" font-weight="700" fill="rgba(200,168,128,.5)">RUSSIA</text>
+        <text x="${px(80)}"   y="${py(30)}"  text-anchor="middle" font-size="8" font-family="Nunito,sans-serif" font-weight="700" fill="rgba(200,168,128,.5)">CHINA</text>
+        <text x="${px(80)}"   y="${py(15)}"  text-anchor="middle" font-size="8" font-family="Nunito,sans-serif" font-weight="700" fill="rgba(200,168,128,.5)">INDIA</text>
+        <text x="${px(134)}"  y="${py(-30)}" text-anchor="middle" font-size="8" font-family="Nunito,sans-serif" font-weight="700" fill="rgba(200,168,128,.5)">AUSTRALIA</text>
+
+        <!-- Ocean label -->
+        <text x="${px(-40)}"  y="${py(-30)}" text-anchor="middle" font-size="9" font-family="Nunito,sans-serif" font-weight="700" fill="rgba(80,140,180,.3)" transform="rotate(-8,${px(-40)},${py(-30)})">ATLANTIC OCEAN</text>
+        <text x="${px(70)}"   y="${py(-20)}" text-anchor="middle" font-size="9" font-family="Nunito,sans-serif" font-weight="700" fill="rgba(80,140,180,.3)">INDIAN OCEAN</text>
+
+        <!-- Compass -->
+        <g transform="translate(32,32)" filter="url(#softglow)">
+          <circle r="16" fill="rgba(26,15,9,.8)" stroke="rgba(200,168,128,.3)" stroke-width="1"/>
+          <polygon points="0,-12 3,-4 0,-6 -3,-4" fill="#E0BC70"/>
+          <polygon points="0,12 3,4 0,6 -3,4" fill="rgba(200,168,128,.4)"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(200,168,128,.3)" stroke-width=".8"/>
+          <text y="-14" text-anchor="middle" font-size="7" fill="#E0BC70" font-family="Nunito,sans-serif" font-weight="800">N</text>
+        </g>
+      </svg>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--tx2)">
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--or);box-shadow:0 0 6px rgba(232,112,58,.5)"></div>
+        ${total} registered user${total!==1?'s':''} · Beta group · Africa-centred
+      </div>
+      ${total===0?'<div style="font-size:10px;color:var(--tx3)">Connect Supabase to see real user data</div>':''}
+    </div>
+  </div>`;
+
+  // ── Region breakdown + GA4 section ──────────────────────────────────
+  if (!breakdown) return;
+  breakdown.innerHTML = `
+    <div class="section-title" style="margin-top:16px">Users by Region</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Region</th><th>Users</th><th>% of total</th></tr></thead>
+      <tbody>
+        ${Object.entries(regionCounts).map(([r,n])=>`
+          <tr>
+            <td>${r}</td>
+            <td><span class="badge badge-or">${n}</span></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="flex:1;height:6px;background:var(--surf2);border-radius:3px;overflow:hidden">
+                  <div style="height:100%;background:var(--or);border-radius:3px;width:${total?Math.round(n/total*100):0}%"></div>
+                </div>
+                ${total?Math.round(n/total*100):0}%
+              </div>
+            </td>
+          </tr>`).join('')}
+        ${total===0?'<tr><td colspan="3" style="text-align:center;color:var(--tx3)">No users yet</td></tr>':''}
+      </tbody>
+    </table></div>
+    <div style="background:var(--surf);border:1px solid var(--brd);border-radius:11px;padding:13px;margin-top:14px">
+      <div class="section-title" style="margin-top:0;margin-bottom:6px">📊 Google Analytics (GA4)</div>
+      <div style="font-size:11px;color:var(--tx2);line-height:1.65;margin-bottom:10px">Paste your GA4 Measurement ID to track location, sessions, and retention. Free at analytics.google.com.</div>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="gaIdInput" placeholder="G-XXXXXXXXXX" value="${localStorage.getItem('ga_id')||''}"
+          style="flex:1;background:var(--surf2);border:1.5px solid var(--brd);border-radius:8px;color:var(--tx);font-family:monospace;font-size:12px;padding:8px 10px;outline:none"/>
+        <button onclick="saveGAId()" style="padding:8px 14px;border-radius:8px;background:var(--tl);border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif">Save</button>
+      </div>
+      <div style="font-size:10px;color:var(--tx3);margin-top:6px">Analytics → New property → Measurement ID → paste above. Location data in GA4 within 24h.</div>
+    </div>`;
+}
+
+
+
+function saveGAId() {
+  const id = (document.getElementById('gaIdInput')||{}).value || '';
+  if (!id.startsWith('G-')) { alert('Must start with G-  e.g. G-ABC123456'); return; }
+  localStorage.setItem('ga_id', id);
+  // Inject GA4 script into the admin page right now
+  injectGA4(id);
+  alert('✅ GA4 ID saved. Add this same ID to your main app for user tracking.');
+}
+
+function injectGA4(id) {
+  if (document.getElementById('ga4script')) return;
+  const s1 = document.createElement('script');
+  s1.id = 'ga4script';
+  s1.async = true;
+  s1.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+  document.head.appendChild(s1);
+  const s2 = document.createElement('script');
+  s2.innerHTML = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${id}');`;
+  document.head.appendChild(s2);
+}
+
+// Auto-inject if saved
+const savedGA = localStorage.getItem('ga_id');
+if (savedGA) injectGA4(savedGA);
+
+/* ── BETA REQUESTS & ACCESS ALERTS ─────────────────────────────────── */
+function renderRequests() {
+  renderBetaRequests();
+  renderAccessAlerts();
+  renderTokenList();
+  updateRequestsBadge();
+}
+
+function renderBetaRequests() {
+  const el = document.getElementById('betaRequestsWrap');
+  if (!el) return;
+  const reqs = DB.betaReqs || [];
+  const pending = reqs.filter(r => r.status === 'pending');
+  const sent    = reqs.filter(r => r.status === 'sent');
+
+  el.innerHTML = `
+    <div class="section-title" style="margin-top:0">
+      Pitch Page Join Requests
+      ${pending.length ? `<span style="background:var(--rd);color:#fff;border-radius:10px;padding:2px 9px;font-size:11px;font-weight:800;margin-left:8px">${pending.length} pending</span>` : ''}
+    </div>
+    ${!reqs.length ? `<div class="empty"><div class="empty-ico">📬</div><div>No requests yet — share the pitch page to get them</div></div>` : ''}
+    <div class="tbl-wrap">
+    ${pending.length ? `<table>
+      <thead><tr><th>Name</th><th>Contact</th><th>Curl type</th><th>Requested</th><th>Action</th></tr></thead>
+      <tbody>
+        ${pending.map(r => `<tr>
+          <td><strong>${r.name||'—'}</strong></td>
+          <td style="font-size:11px">${r.contact||'—'}</td>
+          <td><span class="badge badge-tl">${r.hair_type||'—'}</span></td>
+          <td style="font-size:10px;color:var(--tx3)">${r.ts ? new Date(r.ts).toLocaleDateString('en-ZA') : '—'}</td>
+          <td>
+            <button onclick="sendToken('${r.id}','${(r.contact||'').replace(/'/g,'').slice(0,30)}')" style="padding:5px 10px;border-radius:7px;background:var(--gr);border:none;color:#fff;font-size:10px;font-weight:700;cursor:pointer;margin-right:4px">✓ Send link</button>
+            <button onclick="declineRequest('${r.id}')" style="padding:5px 10px;border-radius:7px;background:var(--surf2);border:1px solid var(--brd);color:var(--tx3);font-size:10px;cursor:pointer">Decline</button>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>` : '<div style="color:var(--tx3);font-size:12px;padding:8px 0">No pending requests</div>'}
+    ${sent.length ? `<div style="margin-top:12px;font-size:11px;color:var(--tx3)">${sent.length} request${sent.length!==1?'s':''} already sent</div>` : ''}
+    </div>`;
+}
+
+function renderAccessAlerts() {
+  const el = document.getElementById('accessAlertsWrap');
+  if (!el) return;
+  const alerts = (DB.accessReqs || []).slice().reverse().slice(0, 20);
+  el.innerHTML = `
+    <div class="section-title">🚨 Blocked Access Attempts</div>
+    ${!alerts.length ? `<div class="empty"><div class="empty-ico">🔒</div><div>No blocked attempts — your tokens are secure</div></div>` : `
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Token tried</th><th>Device</th><th>When</th></tr></thead>
+      <tbody>
+        ${alerts.map(a => `<tr>
+          <td><code style="background:rgba(200,64,64,.15);padding:2px 6px;border-radius:4px;font-size:11px;color:var(--rd2)">${a.token_attempted||'none'}</code></td>
+          <td style="font-size:10px;color:var(--tx3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(a.ua||'').slice(0,60)}</td>
+          <td style="font-size:10px;color:var(--tx3)">${a.ts ? new Date(a.ts).toLocaleString('en-ZA') : '—'}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>`}`;
+}
+
+function renderTokenList() {
+  const el = document.getElementById('tokenListWrap');
+  if (!el) return;
+  const tokens = DB.tokens || [];
+  const active = tokens.filter(t => t.active);
+  const inactive = tokens.filter(t => !t.active);
+
+  el.innerHTML = `
+    <div class="section-title">🔑 Active Tokens (${active.length})</div>
+    <div style="font-size:11px;color:var(--tx2);margin-bottom:10px;line-height:1.6">
+      Create a new token by running this SQL in Supabase:<br>
+      <code style="background:var(--surf2);padding:5px 8px;border-radius:6px;font-size:11px;display:block;margin-top:6px;word-break:break-all">
+        insert into an_tokens (token, name, contact, hair_type, expires_at)<br>
+        values ('NAME2024', 'Full Name', 'contact', '4C', now() + interval '4 weeks');
+      </code>
+    </div>
+    ${active.length ? `<div class="tbl-wrap"><table>
+      <thead><tr><th>Token</th><th>Name</th><th>Contact</th><th>Used</th><th>Expires</th><th>Action</th></tr></thead>
+      <tbody>
+        ${active.map(t => {
+          const expired = t.expires_at && new Date(t.expires_at) < new Date();
+          return `<tr style="${expired?'opacity:.5':''}">
+            <td><code style="font-size:11px;background:var(--surf2);padding:2px 6px;border-radius:4px">${t.token}</code></td>
+            <td>${t.name||'—'}</td>
+            <td style="font-size:11px;color:var(--tx3)">${t.contact||'—'}</td>
+            <td style="text-align:center"><span class="badge ${t.use_count>0?'badge-tl':'badge-or'}">${t.use_count||0}×</span></td>
+            <td style="font-size:10px;color:${expired?'var(--rd2)':'var(--tx3)'}">${t.expires_at ? new Date(t.expires_at).toLocaleDateString('en-ZA') : '∞'}${expired?' ⚠️ EXPIRED':''}</td>
+            <td><button onclick="revokeToken('${t.token}')" style="padding:4px 8px;border-radius:6px;background:rgba(200,64,64,.15);border:1px solid var(--rd);color:var(--rd2);font-size:10px;cursor:pointer">Revoke</button></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table></div>` : '<div style="color:var(--tx3);font-size:12px">No active tokens yet</div>'}`;
+}
+
+async function sendToken(reqId, contact) {
+  const token = prompt('Enter the token to assign to this person (e.g. Anita2024).\nThen send them this link:\n\nallnatural_final.html?t=TOKEN', '');
+  if (!token) return;
+  // Update status in Supabase
+  try {
+    await fetch(`${CFG.url}/rest/v1/an_beta_requests?id=eq.${reqId}`, {
+      method:'PATCH',
+      headers:{apikey:CFG.key, Authorization:'Bearer '+CFG.key, 'Content-Type':'application/json', Prefer:'return=minimal'},
+      body: JSON.stringify({ status:'sent', token_sent:token })
+    });
+    alert(`✅ Marked as sent!\n\nRemember to actually send them:\nallnatural_final.html?t=${token}`);
+    loadAll();
+  } catch(e) { alert('Error updating: ' + e.message); }
+}
+
+async function declineRequest(reqId) {
+  if (!confirm('Decline this request?')) return;
+  try {
+    await fetch(`${CFG.url}/rest/v1/an_beta_requests?id=eq.${reqId}`, {
+      method:'PATCH',
+      headers:{apikey:CFG.key, Authorization:'Bearer '+CFG.key, 'Content-Type':'application/json', Prefer:'return=minimal'},
+      body: JSON.stringify({ status:'declined' })
+    });
+    loadAll();
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function revokeToken(token) {
+  if (!confirm(`Revoke token "${token}"? This user will lose access immediately.`)) return;
+  try {
+    await fetch(`${CFG.url}/rest/v1/an_tokens?token=eq.${encodeURIComponent(token)}`, {
+      method:'PATCH',
+      headers:{apikey:CFG.key, Authorization:'Bearer '+CFG.key, 'Content-Type':'application/json', Prefer:'return=minimal'},
+      body: JSON.stringify({ active:false })
+    });
+    alert('Token revoked — that user can no longer access the app.');
+    loadAll();
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+/* ── RELEASE CONTROL ────────────────────────────────────────────────── */
+function renderReleases() {
+  const el = document.getElementById('releasesWrap');
+  if (!el) return;
+
+  const locked      = localStorage.getItem('beta_locked') !== '0';
+  const betaEndDate = localStorage.getItem('beta_end_date') || '';
+  const currentVer  = localStorage.getItem('current_version') || '1.0.0-beta';
+  const releaseNote = localStorage.getItem('release_note') || '';
+  const updateLog   = JSON.parse(localStorage.getItem('update_log') || '[]');
+
+  el.innerHTML = `
+    <!-- Lock toggle -->
+    <div style="background:${locked?'rgba(200,64,64,.08)':'rgba(90,158,120,.08)'};border:1.5px solid ${locked?'rgba(200,64,64,.3)':'rgba(90,158,120,.3)'};border-radius:13px;padding:16px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+        <div style="font-size:32px">${locked ? '🔒' : '🟢'}</div>
+        <div>
+          <div style="font-size:14px;font-weight:800;color:${locked?'var(--rd2)':'var(--gr2)'}">${locked ? 'Beta locked — users on current version' : 'Open — updates deploy immediately'}</div>
+          <div style="font-size:11px;color:var(--tx3);margin-top:2px">${locked ? 'App is frozen for test group. New app versions won\'t reach users until you unlock.' : 'Any new file you deploy goes live immediately for all users.'}</div>
+        </div>
+      </div>
+      <button onclick="toggleBetaLock()" style="width:100%;padding:11px;border-radius:10px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:#fff;background:${locked?'linear-gradient(135deg,var(--gr),var(--tl))':'linear-gradient(135deg,var(--rd),var(--pk))'}">
+        ${locked ? '🟢 Unlock — allow updates through' : '🔒 Lock beta — freeze app for test group'}
+      </button>
+    </div>
+
+    <!-- Beta end date -->
+    <div style="background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--tx);margin-bottom:8px">📅 Beta end date</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="date" id="betaEndInput" value="${betaEndDate}" style="flex:1;background:var(--surf2);border:1.5px solid var(--brd);border-radius:8px;color:var(--tx);font-family:'Nunito',sans-serif;font-size:12px;padding:8px 10px;outline:none"/>
+        <button onclick="saveBetaEnd()" style="padding:8px 14px;border-radius:8px;background:var(--tl);border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif">Set</button>
+      </div>
+      ${betaEndDate ? `<div style="font-size:11px;color:var(--tx3);margin-top:6px">
+        ${new Date(betaEndDate) > new Date()
+          ? `${Math.ceil((new Date(betaEndDate)-new Date())/864e5)} days remaining in beta`
+          : '⚠️ Beta period has ended — consider pushing your update'}
+      </div>` : ''}
+    </div>
+
+    <!-- Release an update -->
+    <div style="background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--tx);margin-bottom:4px">🚀 Push an update</div>
+      <div style="font-size:11px;color:var(--tx3);margin-bottom:10px;line-height:1.6">When you're ready to push a new version of the app to all users, unlock the beta above and update the file on your hosting. Log the release here for your records.</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input type="text" id="versionInput" placeholder="e.g. 1.1.0" value="${currentVer}" style="width:120px;background:var(--surf2);border:1.5px solid var(--brd);border-radius:8px;color:var(--tx);font-family:monospace;font-size:12px;padding:8px 10px;outline:none"/>
+        <input type="text" id="releaseNoteInput" placeholder="What changed? e.g. Added photo comparison, fixed scalp map" value="${releaseNote}" style="flex:1;background:var(--surf2);border:1.5px solid var(--brd);border-radius:8px;color:var(--tx);font-family:'Nunito',sans-serif;font-size:12px;padding:8px 10px;outline:none"/>
+      </div>
+      <button onclick="logRelease()" style="width:100%;padding:10px;border-radius:10px;background:linear-gradient(135deg,var(--or),var(--pk));border:none;color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif">Log this release</button>
+    </div>
+
+    <!-- Release history -->
+    ${updateLog.length ? `
+    <div style="background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--tx);margin-bottom:10px">📜 Release history</div>
+      ${updateLog.slice().reverse().map(r => `
+        <div style="padding:8px 0;border-top:1px solid var(--brd)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+            <span style="font-size:11px;font-weight:800;color:var(--gd2);font-family:monospace">v${r.version}</span>
+            <span style="font-size:10px;color:var(--tx3)">${r.date}</span>
+            <span style="font-size:9px;background:${r.locked?'rgba(200,64,64,.15)':'rgba(90,158,120,.15)'};color:${r.locked?'var(--rd2)':'var(--gr2)'};padding:1px 6px;border-radius:8px">${r.locked?'locked':'open'}</span>
+          </div>
+          <div style="font-size:11px;color:var(--tx2)">${r.note}</div>
+        </div>`).join('')}
+    </div>` : ''}`;
+}
+
+function toggleBetaLock() {
+  const locked = localStorage.getItem('beta_locked') !== '0';
+  localStorage.setItem('beta_locked', locked ? '0' : '1');
+  renderReleases();
+}
+
+function saveBetaEnd() {
+  const d = (document.getElementById('betaEndInput')||{}).value;
+  if (d) { localStorage.setItem('beta_end_date', d); renderReleases(); }
+}
+
+function logRelease() {
+  const ver  = (document.getElementById('versionInput')||{}).value || '1.0.0';
+  const note = (document.getElementById('releaseNoteInput')||{}).value || 'No note';
+  const log  = JSON.parse(localStorage.getItem('update_log') || '[]');
+  log.push({
+    version: ver, note, date: new Date().toLocaleDateString('en-ZA'),
+    locked: localStorage.getItem('beta_locked') !== '0'
+  });
+  localStorage.setItem('update_log', JSON.stringify(log));
+  localStorage.setItem('current_version', ver);
+  localStorage.setItem('release_note', note);
+  renderReleases();
+  alert(`✅ Release v${ver} logged!\n\nTo push to users:\n1. Upload your new allnatural_final.html to your host\n2. Click "Unlock" above so users get the new version`);
+}
+
+</script>
+<div style="text-align:center;padding:16px;font-size:10px;color:var(--tx3)">© 2026 AllNatural · Research Dashboard · Confidential</div>
+</body>
+</html>

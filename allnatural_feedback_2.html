@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>AllNatural — Research Check-In</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:#1C0F09;color:#F2E6D4;min-height:100vh;padding:0 0 60px}
+:root{--or:#E8703A;--or2:#F09060;--tl:#5A9090;--tl2:#78B4B0;--pk:#D4506A;--gd:#C89848;--gd2:#E0BC70;--gr:#5A9E78;--gr2:#78C898;--surf:#3E2412;--surf2:#4A2C18;--brd:#6A4830;--brd2:#7A5840;--tx:#F2E6D4;--tx2:#C8A880;--tx3:#8A6848}
+
+.hero{background:linear-gradient(160deg,#261408,#1C0F09);padding:28px 20px 20px;text-align:center;border-bottom:1px solid var(--brd)}
+.logo{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gd2);text-shadow:0 0 20px rgba(224,188,112,.3);margin-bottom:4px}
+.hero-sub{font-size:12px;color:var(--tx2);margin-bottom:12px}
+.hero-tag{display:inline-block;background:rgba(90,144,144,.15);border:1px solid rgba(90,144,144,.3);border-radius:10px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--tl2)}
+
+.container{max-width:480px;margin:0 auto;padding:0 16px}
+.section{margin-top:24px}
+.section-title{font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--gd2);text-shadow:0 0 14px rgba(224,188,112,.2);margin-bottom:4px}
+.section-sub{font-size:10px;color:var(--tx3);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+
+.q-card{background:var(--surf);border:1px solid var(--brd);border-radius:13px;padding:14px;margin-bottom:10px}
+.q-label{font-size:12px;font-weight:700;color:var(--tx);margin-bottom:10px;line-height:1.5}
+.q-num{display:inline-block;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--or),var(--pk));font-size:9px;font-weight:800;color:#fff;text-align:center;line-height:20px;margin-right:6px;flex-shrink:0}
+
+/* Scale buttons */
+.scale{display:flex;gap:5px;margin-bottom:4px}
+.scale-btn{flex:1;padding:10px 4px;border-radius:9px;border:1.5px solid var(--brd);background:var(--surf2);color:var(--tx2);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;text-align:center}
+.scale-btn.sel{background:linear-gradient(135deg,var(--or),var(--pk));border-color:transparent;color:#fff}
+.scale-lbl{display:flex;justify-content:space-between;font-size:9px;color:var(--tx3);margin-top:3px}
+
+/* Chip selection */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:7px 12px;border-radius:10px;border:1.5px solid var(--brd);background:var(--surf2);color:var(--tx2);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}
+.chip.sel{background:rgba(90,144,144,.15);border-color:var(--tl);color:var(--tl2)}
+
+/* Text area */
+textarea,input[type=text]{width:100%;background:var(--surf2);border:1.5px solid var(--brd);border-radius:10px;color:var(--tx);font-family:'Nunito',sans-serif;font-size:12px;padding:11px 13px;resize:none;outline:none;transition:border .2s;margin-top:8px}
+textarea:focus,input:focus{border-color:var(--tl)}
+
+/* Submit */
+.submit-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--or),var(--pk));border:none;border-radius:14px;color:#fff;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;margin-top:24px;letter-spacing:.3px;box-shadow:0 6px 24px rgba(232,112,58,.35);transition:all .2s}
+.submit-btn:active{transform:scale(.98)}
+
+/* Done state */
+.done-card{text-align:center;padding:40px 20px;display:none}
+.done-ico{font-size:56px;margin-bottom:14px}
+.done-title{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--gd2);margin-bottom:8px}
+.done-msg{font-size:13px;color:var(--tx2);line-height:1.65}
+
+.progress-bar{height:4px;background:var(--brd);border-radius:2px;margin:14px 0 0;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--tl),var(--or));border-radius:2px;transition:width .4s ease}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="logo">AllNatural</div>
+  <div class="hero-sub">African Natural Hair Care Research</div>
+  <div class="hero-tag">📋 2-Week Check-In · Takes ~4 minutes</div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+
+<div class="container" id="formContainer">
+
+  <!-- SECTION 1: Usage -->
+  <div class="section">
+    <div class="section-title">How you've been using it</div>
+    <div class="section-sub">Usage patterns</div>
+
+    <div class="q-card">
+      <div class="q-label"><span class="q-num">1</span>How many times did you open AllNatural in the last 2 weeks?</div>
+      <div class="chips" id="q1">
+        <div class="chip" onclick="selChip('q1',this,'1–2 times')">1–2 times</div>
+        <div class="chip" onclick="selChip('q1',this,'3–5 times')">3–5 times</div>
+        <div class="chip" onclick="selChip('q1',this,'6–10 times')">6–10 times</div>
+        <div class="chip" onclick="selChip('q1',this,'Daily')">Daily</div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-label"><span class="q-num">2</span>Which features did you actually use? (select all)</div>
+      <div class="chips" id="q2">
+        <div class="chip" onclick="togChip('q2',this,'Daily quests')">Daily quests</div>
+        <div class="chip" onclick="togChip('q2',this,'Wash day planner')">Wash day planner</div>
+        <div class="chip" onclick="togChip('q2',this,'Hair Lab tests')">Hair Lab tests</div>
+        <div class="chip" onclick="togChip('q2',this,'Remedies')">Remedies</div>
+        <div class="chip" onclick="togChip('q2',this,'Calendar')">Calendar</div>
+        <div class="chip" onclick="togChip('q2',this,'Wellness tracker')">Wellness tracker</div>
+        <div class="chip" onclick="togChip('q2',this,'Supplements log')">Supplements log</div>
+        <div class="chip" onclick="togChip('q2',this,'Progress photos')">Progress photos</div>
+        <div class="chip" onclick="togChip('q2',this,'Coach')">Coach</div>
+        <div class="chip" onclick="togChip('q2',this,'Community')">Community</div>
+        <div class="chip" onclick="togChip('q2',this,'Scalp map')">Scalp map</div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-label"><span class="q-num">3</span>What kept you coming back? (select up to 2)</div>
+      <div class="chips" id="q3">
+        <div class="chip" onclick="togChipMax('q3',this,'The daily quests',2)">The daily quests</div>
+        <div class="chip" onclick="togChipMax('q3',this,'Learning something new',2)">Learning something new</div>
+        <div class="chip" onclick="togChipMax('q3',this,'Tracking my progress',2)">Tracking my progress</div>
+        <div class="chip" onclick="togChipMax('q3',this,'The coach responses',2)">The coach responses</div>
+        <div class="chip" onclick="togChipMax('q3',this,'The XP / levelling up',2)">XP / levelling up</div>
+        <div class="chip" onclick="togChipMax('q3',this,'Wash day planning',2)">Wash day planning</div>
+        <div class="chip" onclick="togChipMax('q3',this,'Nothing yet — I forgot about it',2)">Forgot about it</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Hair journey -->
+  <div class="section">
+    <div class="section-title">Your hair journey</div>
+    <div class="section-sub">What we're measuring</div>
+
+    <div class="q-card">
+      <div class="q-label"><span class="q-num">4</span>How would you rate your hair health compared to 2 weeks ago?</div>
+      <div class="scale" id="q4">
+        <div class="scale-btn" onclick="selScale('q4',this,1)">1</div>
+        <div class="scale-btn" onclick="selScale('q4',this,2)">2</div>
+        <div class="scale-btn" onclick="selScale('q4',this,3)">3</div>
+        <div class="scale-btn" onclick="selScale('q4',this,4)">4</div>
+        <div class="scale-btn" onclick="selScale('q4',this,5)">5</div>
+      </div>
+      <div class="scale-lbl"><span>Much worse</span><span>Much better</span></div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-label"><span class="q-num">5</span>Rate each area this week (tap to score)</div>
+
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--tx2);margin-bottom:5px">🪮 Shedding (1=lots, 5=none)</div>
+        <div class="scale" id="q5_0">
+          <div class="scale-btn" onclick="selScale('q5_0',this,1)">1</div>
+          <div class="scale-btn" onclick="selScale('q5_0',this,2)">2</div>
+          <div class="scale-btn" onclick="selScale('q5_0',this,3)">3</div>
+          <div class="scale-btn" onclick="selScale('q5_0',this,4)">4</div>
+          <div class="scale-btn" onclick="selScale('q5_0',this,5)">5</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--tx2);margin-bottom:5px">💧 Moisture &amp; softness</div>
+        <div class="scale" id="q5_1">
+          <div class="scale-btn" onclick="selScale('q5_1',this,1)">1</div>
+          <div class="scale-btn" onclick="selScale('q5_1',this,2)">2</div>
+          <div class="scale-btn" onclick="selScale('q5_1',this,3)">3</div>
+          <div class="scale-btn" onclick="selScale('q5_1',this,4)">4</div>
+          <div class="scale-btn" onclick="selScale('q5_1',this,5)">5</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--tx2);margin-bottom:5px">🌱 Scalp comfort</div>
+        <div class="scale" id="q5_2">
+          <div class="scale-btn" onclick="selScale('q5_2',this,1)">1</div>
+          <div class="scale-btn" onclick="selScale('q5_2',this,2)">2</div>
+          <div class="scale-btn" onclick="selScale('q5_2',this,3)">3</div>
+          <div class="scale-btn" onclick="selScale('q5_2',this,4)">4</div>
+          <div class="scale-btn" onclick="selScale('q5_2',this,5)">5</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--tx2);margin-bottom:5px">✂️ Breakage level (1=lots, 5=none)</div>
+        <div class="scale" id="q5_3">
+          <div class="scale-btn" onclick="selScale('q5_3',this,1)">1</div>
+          <div class="scale-btn" onclick="selScale('q5_3',this,2)">2</div>
+          <div class="scale-btn" onclick="selScale('q5_3',this,3)">3</div>
+          <div class="scale-btn" onclick="selScale('q5_3',this,4)">4</div>
+          <div class="scale-btn" onclick="selScale('q5_3',this,5)">5</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:4px">
+        <div style="font-size:11px;color:var(--tx2);margin-bottom:5px">👑 Overall confidence with your hair</div>
+        <div class="scale" id="q5_4">
+          <div class="scale-btn" onclick="selScale('q5_4',this,1)">1</div>
+          <div class="scale-btn" onclick="selScale('q5_4',this,2)">2</div>
+          <div class="scale-btn" onclick="selScale('q5_4',this,3)">3</div>
+          <div class="scale-btn" onclick="selScale('q5_4',this,4)">4</div>
+          <div class="scale-btn" onclick="selScale('q5_4',this,5)">5</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-label"><span class="q-num">6</span>Did you do a full wash day in the last 2 weeks?</div>
+      <div class="chips" id="q6">
+        <div class="chip" onclick="selChip('q6',this,'Yes — used the planner')">Yes — used the planner</div>
+        <div class="chip" onclick="selChip('q6',this,'Yes — without the planner')">Yes — without it</div>
+        <div class="chip" onclick="selChip('q6',this,'Not yet')">Not yet</div>
+        <div class="chip" onclick="selChip('q6',this,'I co-washed instead')">Co-washed instead</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: App experience -->
+  <div class="section">
+    <div class="section-title">The app experience</div>
+    <div class="section-sub">Help us improve</div>
+
+    <div class="q-card">
+      <div class="q-label"><span class="q-num">7</span>How relevant did the coach answers feel to YOUR hair specifically?</div>
+      <div class="scale" id="q7">
+        <div class="scale-btn" onclick="selScale('q7',this,1)">1</div>
+        <div class="scale-btn" onclick="selScale('q7',this,2)">2</div>
+        <div class="scale-btn" onclick="selScale('q7',this,3)">3</div>
+        <div class="scale-btn" onclick="selScale('q7',this,4)">4</div>
+        <div class="scale-btn" onclick="selScale('q7',this,5)">5</div>
+      </div>
+      <div class="scale-lbl"><span>Completely generic</span><span>Felt made for me</span></div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-label"><span class="q-num">8</span>What was confusing or broken? (be ruthless — helps us most)</div>
+      <textarea id="q8" rows="3" placeholder="e.g. The wash day planner opened blank · The scalp map was hard to tap · I couldn't find the supplement log…"></textarea>
+    </div>
+
+    <div class="q-card">
+      <div class="q-label"><span class="q-num">9</span>What feature do you wish existed that doesn't?</div>
+      <textarea id="q9" rows="3" placeholder="e.g. A way to track my shrinkage vs stretched length · Comparison to others with my hair type · Barber appointment reminders…"></textarea>
+    </div>
+
+    <div class="q-card">
+      <div class="q-label"><span class="q-num">10</span>How likely are you to keep using AllNatural? (Net Promoter)</div>
+      <div class="scale" id="q10">
+        <div class="scale-btn" onclick="selScale('q10',this,1)" style="font-size:10px">1</div>
+        <div class="scale-btn" onclick="selScale('q10',this,2)" style="font-size:10px">2</div>
+        <div class="scale-btn" onclick="selScale('q10',this,3)" style="font-size:10px">3</div>
+        <div class="scale-btn" onclick="selScale('q10',this,4)" style="font-size:10px">4</div>
+        <div class="scale-btn" onclick="selScale('q10',this,5)" style="font-size:10px">5</div>
+        <div class="scale-btn" onclick="selScale('q10',this,6)" style="font-size:10px">6</div>
+        <div class="scale-btn" onclick="selScale('q10',this,7)" style="font-size:10px">7</div>
+        <div class="scale-btn" onclick="selScale('q10',this,8)" style="font-size:10px">8</div>
+        <div class="scale-btn" onclick="selScale('q10',this,9)" style="font-size:10px">9</div>
+        <div class="scale-btn" onclick="selScale('q10',this,10)" style="font-size:10px">10</div>
+      </div>
+      <div class="scale-lbl"><span>Definitely not</span><span>Absolutely yes</span></div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-label"><span class="q-num">11</span>In one sentence — what is AllNatural to you so far?</div>
+      <input type="text" id="q11" placeholder="e.g. A knowledgeable friend who actually understands my hair…"/>
+    </div>
+  </div>
+
+  <button class="submit-btn" onclick="submitForm()">Submit Check-In 🌿</button>
+</div>
+
+<!-- Done state -->
+<div class="container">
+  <div class="done-card" id="doneCard">
+    <div class="done-ico">🌟</div>
+    <div class="done-title">Thank you, Crown.</div>
+    <div class="done-msg">Your feedback directly shapes AllNatural. Every bug you name gets fixed. Every feature you wish for goes on the list.<br><br>Check back in 2 weeks for the next round — and keep going with your crown journey. 💛</div>
+  </div>
+</div>
+
+<script>
+const answers = {};
+let totalQs = 0, answeredQs = 0;
+
+function selChip(id, el, val) {
+  document.querySelectorAll('#'+id+' .chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  const prev = answers[id];
+  answers[id] = val;
+  if (!prev) { answeredQs++; updateProgress(); }
+}
+function togChip(id, el, val) {
+  el.classList.toggle('sel');
+  if (!answers[id]) answers[id] = [];
+  if (el.classList.contains('sel')) answers[id].push(val);
+  else answers[id] = answers[id].filter(v=>v!==val);
+  if (!answers[id+'_counted'] && answers[id].length) { answers[id+'_counted']=true; answeredQs++; updateProgress(); }
+}
+function togChipMax(id, el, val, max) {
+  const sels = document.querySelectorAll('#'+id+' .chip.sel');
+  if (!el.classList.contains('sel') && sels.length >= max) { 
+    el.style.animation='shake .3s'; setTimeout(()=>el.style.animation='',300);
+    return; 
+  }
+  togChip(id, el, val);
+}
+function selScale(id, el, val) {
+  document.querySelectorAll('#'+id+' .scale-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  const prev = answers[id];
+  answers[id] = val;
+  if (!prev) { answeredQs++; updateProgress(); }
+}
+function updateProgress() {
+  const pct = Math.min(100, Math.round(answeredQs / 14 * 100));
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function submitForm() {
+  // Collect text fields
+  ['q8','q9','q11'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.value.trim()) answers[id] = el.value.trim();
+  });
+  // Collect sub-scales for q5
+  answers['q5'] = {};
+  const lbls = ['shedding','moisture','scalp','breakage','confidence'];
+  lbls.forEach((k,i)=>{
+    const sel = document.querySelector('#q5_'+i+' .scale-btn.sel');
+    if(sel) answers['q5'][k] = parseInt(sel.textContent);
+  });
+
+  // Log to console + optional webhook
+  console.log('AllNatural feedback:', JSON.stringify(answers, null, 2));
+  
+  // Show done state
+  document.getElementById('formContainer').style.display = 'none';
+  const done = document.getElementById('doneCard');
+  done.style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
