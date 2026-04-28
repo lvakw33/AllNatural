@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>AllNatural — Crown Hub</title>
+<meta property="og:title" content="AllNatural — Natural Hair Care"/>
+<meta property="og:description" content="Science-backed hair care built for African crowns. 3B to 4C. Free. No download needed."/>
+<meta property="og:type" content="website"/>
+<meta name="theme-color" content="#261408"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Nunito',sans-serif;background:#1C0F09;color:#F2E6D4;min-height:100vh;padding-bottom:40px}
+
+/* ── HERO ─────────────────────────────────────── */
+.hero{padding:48px 24px 32px;text-align:center;background:radial-gradient(ellipse at 50% 0,rgba(200,152,72,.14),transparent 60%)}
+.crown{font-size:64px;margin-bottom:12px;animation:float 5s ease-in-out infinite;display:block}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.logo{font-family:'Cinzel',serif;font-size:34px;font-weight:700;background:linear-gradient(135deg,#E0BC70,#F09060,#E0BC70);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200%;animation:shimmer 4s linear infinite;margin-bottom:6px}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+.tagline{font-size:14px;color:#C8A880;line-height:1.6;max-width:320px;margin:0 auto 6px}
+.mission{display:inline-block;background:rgba(90,144,144,.15);border:1px solid rgba(90,144,144,.3);border-radius:20px;padding:5px 16px;font-size:11px;font-weight:700;color:#78B4B0;margin-top:8px}
+
+/* ── CARDS ────────────────────────────────────── */
+.cards{padding:0 16px;max-width:440px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+
+.card{border-radius:18px;padding:20px;border:1.5px solid;position:relative;overflow:hidden;text-decoration:none;display:block;transition:transform .2s,box-shadow .2s;cursor:pointer}
+.card:active{transform:scale(.98)}
+.card::before{content:'';position:absolute;inset:0;opacity:.06;pointer-events:none}
+
+/* App card */
+.card-app{background:linear-gradient(135deg,#261408,#301A0C);border-color:rgba(232,112,58,.4)}
+.card-app::before{background:radial-gradient(circle at 80% 20%,#E8703A,transparent)}
+.card-pitch{background:linear-gradient(135deg,#0F1A12,#152012);border-color:rgba(90,144,144,.4)}
+.card-pitch::before{background:radial-gradient(circle at 80% 20%,#5A9090,transparent)}
+.card-admin{background:linear-gradient(135deg,#120810,#1A0E18);border-color:rgba(200,152,72,.35)}
+.card-admin::before{background:radial-gradient(circle at 80% 20%,#C89848,transparent)}
+
+.card-ico{font-size:36px;margin-bottom:10px;display:block}
+.card-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
+.card-title{font-family:'Cinzel',serif;font-size:18px;font-weight:700;margin-bottom:6px;line-height:1.3}
+.card-body{font-size:12px;color:#C8A880;line-height:1.65;margin-bottom:14px}
+.card-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:800;border:none;cursor:pointer;font-family:'Nunito',sans-serif;letter-spacing:.2px;transition:all .2s}
+.card-btn-app  {background:linear-gradient(135deg,#E8703A,#D4506A);color:#fff;box-shadow:0 4px 18px rgba(232,112,58,.4)}
+.card-btn-pitch{background:linear-gradient(135deg,#5A9090,#78B4B0);color:#fff;box-shadow:0 4px 18px rgba(90,144,144,.35)}
+.card-btn-admin{background:linear-gradient(135deg,#C89848,#E0BC70);color:#261408;box-shadow:0 4px 18px rgba(200,152,72,.35)}
+
+/* Token modal */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:999;align-items:flex-end;justify-content:center;padding:16px}
+.modal-box{background:#261408;border:1.5px solid #7A5840;border-radius:20px 20px 14px 14px;padding:24px 20px;max-width:440px;width:100%;max-height:80vh;overflow-y:auto}
+.modal-title{font-family:'Cinzel',serif;font-size:17px;font-weight:700;color:#E0BC70;margin-bottom:6px}
+.modal-sub{font-size:12px;color:#C8A880;line-height:1.6;margin-bottom:16px}
+.inp{width:100%;background:#3E2412;border:1.5px solid #6A4830;border-radius:10px;color:#F2E6D4;font-family:'Nunito',sans-serif;font-size:14px;padding:12px 14px;outline:none;margin-bottom:10px;transition:border .2s}
+.inp:focus{border-color:#78B4B0}
+.btn-full{width:100%;padding:13px;border-radius:12px;border:none;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;margin-bottom:8px}
+.btn-teal{background:linear-gradient(135deg,#5A9090,#78B4B0);color:#fff}
+.btn-ghost{background:transparent;border:1px solid #6A4830;color:#8A6848;font-size:13px}
+
+/* Admin modal */
+.admin-warn{background:rgba(200,152,72,.1);border:1px solid rgba(200,152,72,.3);border-radius:11px;padding:13px;margin-bottom:14px;font-size:12px;color:#C8A880;line-height:1.65}
+.admin-warn strong{color:#E0BC70}
+
+/* Step list */
+.steps{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.step{display:flex;gap:12px;align-items:flex-start}
+.step-num{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#E8703A,#D4506A);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-txt{font-size:12px;color:#C8A880;line-height:1.6;flex:1}
+.step-txt strong{color:#F2E6D4}
+code{background:#3E2412;padding:3px 8px;border-radius:6px;font-size:11px;font-family:monospace;color:#E0BC70;word-break:break-all}
+
+/* Share tip */
+.share-tip{background:rgba(90,144,144,.08);border:1px solid rgba(90,144,144,.2);border-radius:11px;padding:12px;margin-top:12px;font-size:11px;color:#C8A880;line-height:1.6}
+.share-tip strong{color:#78B4B0}
+
+/* Footer */
+.footer{text-align:center;padding:32px 16px 8px;font-size:11px;color:#4A2C18;line-height:1.7}
+.footer strong{color:#6A4830}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="crown">👑</span>
+  <div class="logo">AllNatural</div>
+  <div class="tagline">Science-backed hair care for African crowns. 3B to 4C. Free. No download needed.</div>
+  <span class="mission">🌍 Improving hair education across Africa & the diaspora</span>
+</div>
+
+<!-- CARDS -->
+<div class="cards">
+
+  <!-- APP CARD -->
+  <div class="card card-app" onclick="openAppModal()">
+    <span class="card-ico">📱</span>
+    <div class="card-label" style="color:#E8703A">For Beta Participants</div>
+    <div class="card-title" style="color:#F2E6D4">Open the App</div>
+    <div class="card-body">Your personal AllNatural hair care app. Requires your personal invitation link — enter your token to continue.</div>
+    <button class="card-btn card-btn-app" onclick="openAppModal();event.stopPropagation()">Enter my token →</button>
+  </div>
+
+  <!-- PITCH CARD -->
+  <div class="card card-pitch" onclick="openPitchModal()">
+    <span class="card-ico">🌿</span>
+    <div class="card-label" style="color:#78B4B0">Want to join the beta?</div>
+    <div class="card-title" style="color:#F2E6D4">Learn About AllNatural</div>
+    <div class="card-body">Read about the research, the features, and why this app is different from anything else built for our hair.</div>
+    <button class="card-btn card-btn-pitch" onclick="openPitchModal();event.stopPropagation()">Read the pitch →</button>
+  </div>
+
+  <!-- ADMIN CARD -->
+  <div class="card card-admin" onclick="openAdminModal()">
+    <span class="card-ico">📊</span>
+    <div class="card-label" style="color:#E0BC70">Researcher only</div>
+    <div class="card-title" style="color:#F2E6D4">Admin Dashboard</div>
+    <div class="card-body">Research data, user insights, world map, beta requests and release control. Requires Supabase credentials.</div>
+    <button class="card-btn card-btn-admin" onclick="openAdminModal();event.stopPropagation()">Open dashboard →</button>
+  </div>
+
+</div>
+
+<!-- ── APP MODAL ──────────────────────────────── -->
+<div class="modal" id="appModal">
+  <div class="modal-box">
+    <div class="modal-title">Open AllNatural 📱</div>
+    <div class="modal-sub">Enter the personal token from your invitation link. Tokens are case-sensitive and unique to you — do not share.</div>
+    <input class="inp" id="tokenInput" type="text" placeholder="e.g. Anita2024" autocomplete="off" autocorrect="off" autocapitalize="off"/>
+    <button class="btn-full btn-teal" onclick="launchApp()">Open my app 👑</button>
+    <button class="btn-full btn-ghost" onclick="closeModal('appModal')">Cancel</button>
+    <div class="share-tip">
+      <strong>Don't have a token?</strong><br>
+      Only the researcher can issue tokens. If you haven't received one, tap "Learn About AllNatural" above and fill in the join request.
+    </div>
+  </div>
+</div>
+
+<!-- ── PITCH MODAL ────────────────────────────── -->
+<div class="modal" id="pitchModal">
+  <div class="modal-box">
+    <div class="modal-title">About AllNatural 🌿</div>
+    <div class="modal-sub">You're about to open the full pitch — what AllNatural is, the science behind it, and how to join the beta.</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-txt">Read about the research and features</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-txt">Tap <strong>"Join the beta →"</strong> at the bottom</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-txt">Fill in your name, contact, and curl type</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-txt">The researcher sends you a personal link within 24–48h</div></div>
+    </div>
+    <button class="btn-full btn-teal" onclick="openFile('allnatural_pitch_3.html')">Open the pitch →</button>
+    <button class="btn-full btn-ghost" onclick="closeModal('pitchModal')">Not now</button>
+  </div>
+</div>
+
+<!-- ── ADMIN MODAL ────────────────────────────── -->
+<div class="modal" id="adminModal">
+  <div class="modal-box">
+    <div class="modal-title">Admin Dashboard 📊</div>
+    <div class="admin-warn">
+      <strong>Researcher access only.</strong><br>
+      This dashboard shows all research data. You will need your <strong>Supabase URL and service role key</strong> ready — enter them inside the dashboard settings when it opens.
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-txt">Open the dashboard below</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-txt">Enter your <strong>Supabase URL</strong> and <strong>service_role key</strong> in the Settings tab</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-txt">Tap <strong>Connect</strong> — all data loads automatically</div></div>
+    </div>
+    <div class="share-tip" style="margin-bottom:14px">
+      <strong>Supabase keys:</strong> Go to your Supabase project → Settings → API → copy the URL and service_role key (not the anon key).
+    </div>
+    <button class="btn-full btn-teal" onclick="openFile('allnatural_admin_6.html')" style="background:linear-gradient(135deg,#C89848,#E0BC70);color:#261408">Open dashboard →</button>
+    <button class="btn-full btn-ghost" onclick="closeModal('adminModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <strong>AllNatural</strong> · Closed Beta · Research Project<br>
+  All content and features are proprietary and confidential.<br>
+  © 2026 AllNatural. All rights reserved.
+</div>
+
+<script>
+function openAppModal()   { document.getElementById('appModal').style.display='flex';   document.getElementById('tokenInput').focus(); }
+function openPitchModal() { document.getElementById('pitchModal').style.display='flex'; }
+function openAdminModal() { document.getElementById('adminModal').style.display='flex'; }
+function closeModal(id)   { document.getElementById(id).style.display='none'; }
+
+// Close modal on backdrop tap
+['appModal','pitchModal','adminModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) closeModal(id);
+  });
+});
+
+// Handle Enter key on token input
+document.getElementById('tokenInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') launchApp();
+});
+
+function launchApp() {
+  const token = (document.getElementById('tokenInput').value || '').trim();
+  if (!token) {
+    document.getElementById('tokenInput').style.borderColor = '#E8703A';
+    document.getElementById('tokenInput').placeholder = 'Please enter your token first';
+    return;
+  }
+  // Open app with token
+  window.open('https://lvakw33.github.io/AllNatural/allnatural_final_28.html?t=' + encodeURIComponent(token) + '&v=1777327153', '_blank');
+  closeModal('appModal');
+}
+
+function openFile(filename) {
+  const urls = {
+    'allnatural_pitch_3.html': 'https://lvakw33.github.io/AllNatural/allnatural_pitch_3.html',
+    'allnatural_admin_6.html': 'https://lvakw33.github.io/AllNatural/allnatural_admin_6.html',
+    'allnatural_feedback_2.html': 'https://lvakw33.github.io/AllNatural/allnatural_feedback_2.html',
+  };
+  const url = urls[filename] || ('https://lvakw33.github.io/AllNatural/' + filename);
+  window.open(url + '?v=1777372117', '_blank');
+  closeModal('pitchModal');
+  closeModal('adminModal');
+}
+</script>
+</body>
+</html>
