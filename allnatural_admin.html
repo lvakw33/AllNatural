@@ -297,8 +297,8 @@ async function loadAll() {
       sbFetch('an_wash_days'),
       sbFetch('an_style_installs'),
       sbFetch('an_takedowns'),
-      sbFetch('an_beta_requests').catch(()=>{ return JSON.parse(localStorage.getItem('an_pitch_requests')||'[]'); }),
-      sbFetch('an_access_requests').catch(()=>[]),
+      sbFetch('an_beta_requests', '&order=ts.desc').catch(()=>{ return JSON.parse(localStorage.getItem('an_pitch_requests')||'[]'); }),
+      sbFetch('an_access_requests', '&order=ts.desc').catch(()=>[])
       sbFetch('an_tokens').catch(()=>[]),
     ]);
     DB = { users, checkins, mh, tests, products, washdays, installs, takedowns,
