@@ -533,28 +533,19 @@ async function submitJoinRequest() {
     localStorage.setItem('an_pitch_requests', JSON.stringify(existing));
   } catch(e) {}
 
-  // 2. Try all known Supabase configs (pitch page + app page share same origin)
-  const configs = [
-    { url: localStorage.getItem('sb_url'), key: localStorage.getItem('sb_key') },
-    { url: localStorage.getItem('an_sb_url'), key: localStorage.getItem('an_sb_key') },
-  ];
-  for (const cfg of configs) {
-    if (cfg.url && cfg.key) {
-      try {
-        await fetch(cfg.url + '/rest/v1/an_beta_requests', {
-          method: 'POST',
-          headers: {
-            apikey: cfg.key,
-            Authorization: 'Bearer ' + cfg.key,
-            'Content-Type': 'application/json',
-            Prefer: 'return=minimal'
-          },
-          body: JSON.stringify(payload)
-        });
-        break;
-      } catch(e) {}
-    }
-  }
+ // 2. Post directly to Supabase
+  try {
+    await fetch('https://wvdmkxofapswzuesjgjn.supabase.co/rest/v1/an_beta_requests', {
+      method: 'POST',
+      headers: {
+        apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZG1reG9mYXBzd3p1ZXNqZ2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMjAzMzMsImV4cCI6MjA5MjY5NjMzM30.PFA8A7xbT0aG55CudzklhNRu1bxseZ0TnsRrSAURGks',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZG1reG9mYXBzd3p1ZXNqZ2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMjAzMzMsImV4cCI6MjA5MjY5NjMzM30.PFA8A7xbT0aG55CudzklhNRu1bxseZ0TnsRrSAURGks',
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal'
+      },
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {}
 
   // 3. Always show confirmation — regardless of Supabase success
   const s2 = document.getElementById('joinStep2');
