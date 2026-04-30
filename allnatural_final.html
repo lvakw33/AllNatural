@@ -4461,7 +4461,10 @@ function logMassage(silent) {
   }
   saveState(); updXP(); buildQuests();
   const mc = document.getElementById('massageCt');
-  if (mc) mc.textContent = ST.massageCount + ' massages this month';
+  if (mc) const wkS = new Date(); wkS.setDate(wkS.getDate() - wkS.getDay());
+const wkStr = wkS.toISOString().split('T')[0];
+const wkCt = Object.keys(ST.questsDone||{}).filter(d=>d>=wkStr&&(ST.questsDone[d]||[]).includes('massage')).length;
+mc.textContent = wkCt + ' massage' + (wkCt!==1?'s':'') + ' this week';
   if (!silent) {
     showToast('🌱 Massage logged! +25 XP');
     notify('💆 Scalp massage complete — great for circulation');
@@ -8669,8 +8672,8 @@ function togglePostpartum() {
   saveState();
   buildProfile();
   if (ST.isPostpartum) {
-    notify('💛 Postpartum mode on — shedding timeline context added to your insights');
-  }
+    notify(ST.isPostpartum ? '💛 Postpartum mode on — shedding timeline added' : '✅ Postpartum mode off');
+  
 }
 
 function setPostpartumMonths(n) {
