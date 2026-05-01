@@ -276,7 +276,8 @@ function connect() {
 
 // ── API ────────────────────────────────────────────────────────────────────
 async function sbFetch(table, params) {
-  const url = `${SB_URL}/rest/v1/${table}?select=*${params||''}&order=created_at.desc&limit=2000`;
+ const defaultOrder = (params||'').includes('order=') ? '' : '&order=created_at.desc';
+const url = `${SB_URL}/rest/v1/${table}?select=*${params||''}${defaultOrder}&limit=2000`;
   const r = await fetch(url, {
     headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
   });
