@@ -258,12 +258,16 @@ let DB = { users:[], checkins:[], mh:[], tests:[], products:[], washdays:[], ins
 
 // ── PERSISTED CONFIG ───────────────────────────────────────────────────────
 function loadConfig() {
+  // Always use hardcoded URL — auto-connect with anon key, upgrade to service key if saved
   SB_URL = 'https://wvdmkxofapswzuesjgjn.supabase.co';
   SB_KEY = localStorage.getItem('admin_sb_key') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZG1reG9mYXBzd3p1ZXNqZ2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMjAzMzMsImV4cCI6MjA5MjY5NjMzM30.PFA8A7xbT0aG55CudzklhNRu1bxseZ0TnsRrSAURGks';
+
   const urlEl = document.getElementById('cfgUrl');
   const keyEl = document.getElementById('cfgKey');
   if (urlEl) urlEl.value = SB_URL;
   if (keyEl) keyEl.value = localStorage.getItem('admin_sb_key') || '';
+
+  // Auto-load immediately — no waiting for user to click connect
   loadAll();
 }
 
@@ -278,8 +282,9 @@ function connect() {
 
 // ── API ────────────────────────────────────────────────────────────────────
 async function sbFetch(table, params) {
- const defaultOrder = (params||'').includes('order=') ? '' : '&order=created_at.desc';
-const url = `${SB_URL}/rest/v1/${table}?select=*${params||''}${defaultOrder}&limit=2000`;
+  // Use created_at for most tables, but some use ts — params can override
+  const defaultOrder = params && params.includes('order=') ? '' : '&order=created_at.desc';
+  const url = `${SB_URL}/rest/v1/${table}?select=*${params||''}${defaultOrder}&limit=2000`;
   const r = await fetch(url, {
     headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
   });
@@ -301,7 +306,7 @@ async function loadAll() {
       sbFetch('an_style_installs'),
       sbFetch('an_takedowns'),
       sbFetch('an_beta_requests', '&order=ts.desc').catch(()=>{ return JSON.parse(localStorage.getItem('an_pitch_requests')||'[]'); }),
-      sbFetch('an_access_requests', '&order=ts.desc').catch(()=>[])
+      sbFetch('an_access_requests', '&order=ts.desc').catch(()=>[]),
       sbFetch('an_tokens').catch(()=>[]),
     ]);
     DB = { users, checkins, mh, tests, products, washdays, installs, takedowns,
