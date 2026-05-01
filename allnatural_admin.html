@@ -1228,7 +1228,7 @@ function renderBetaRequests() {
           <td><span class="badge badge-tl">${r.hair_type||'—'}</span></td>
           <td style="font-size:10px;color:var(--tx3)">${r.ts ? new Date(r.ts).toLocaleDateString('en-ZA') : '—'}</td>
           <td>
-            <button onclick="sendToken('${r.id}','${(r.contact||'').replace(/'/g,'').slice(0,30)}')" style="padding:5px 10px;border-radius:7px;background:var(--gr);border:none;color:#fff;font-size:10px;font-weight:700;cursor:pointer;margin-right:4px">✓ Send link</button>
+            <button onclick="sendToken('${r.id}','${(r.contact||'').replace(/'/g,'').slice(0,30)}','${(r.name||'').replace(/'/g,'').slice(0,30)}','${(r.hair_type||'').replace(/'/g,'')}')" style="padding:5px 10px;border-radius:7px;background:var(--gr);border:none;color:#fff;font-size:10px;font-weight:700;cursor:pointer;margin-right:4px">✓ Send link</button>
             <button onclick="declineRequest('${r.id}')" style="padding:5px 10px;border-radius:7px;background:var(--surf2);border:1px solid var(--brd);color:var(--tx3);font-size:10px;cursor:pointer">Decline</button>
           </td>
         </tr>`).join('')}
@@ -1291,19 +1291,114 @@ function renderTokenList() {
     </table></div>` : '<div style="color:var(--tx3);font-size:12px">No active tokens yet</div>'}`;
 }
 
-async function sendToken(reqId, contact) {
-  const token = prompt('Enter the token to assign to this person (e.g. Anita2024).\nThen send them this link:\n\nallnatural_final.html?t=TOKEN', '');
-  if (!token) return;
-  // Update status in Supabase
+async function sendToken(reqId, contact, name, hairType) {
+  // Show a proper modal to create token
+  const existing = document.getElementById('sendTokenModal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'sendTokenModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+  modal.innerHTML = `
+    <div style="background:var(--bg);border:1.5px solid var(--brd);border-radius:16px;padding:20px;max-width:400px;width:100%">
+      <div style="font-size:16px;font-weight:800;color:var(--gold);margin-bottom:6px;font-family:'Cinzel',serif">Send Beta Access</div>
+      <div style="font-size:12px;color:var(--tx2);margin-bottom:14px">Create a token and add it to Supabase — then copy the link to send.</div>
+
+      <label style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Participant name</label>
+      <input id="stName" type="text" value="${name||''}" placeholder="e.g. Anita M."
+        style="width:100%;background:var(--surf2);border:1px solid var(--brd);border-radius:8px;color:var(--tx);font-size:13px;padding:9px 11px;outline:none;font-family:'Nunito',sans-serif;margin-bottom:10px"/>
+
+      <label style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Token (no spaces)</label>
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <input id="stToken" type="text" placeholder="e.g. Anita2026"
+          style="flex:1;background:var(--surf2);border:1px solid var(--brd);border-radius:8px;color:var(--tx);font-size:13px;padding:9px 11px;outline:none;font-family:monospace"/>
+        <button onclick="stAutoToken()" style="padding:9px 12px;border-radius:8px;background:var(--surf2);border:1px solid var(--brd);color:var(--tx2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif">Auto</button>
+      </div>
+
+      <label style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Hair type</label>
+      <input id="stHair" type="text" value="${hairType||''}" placeholder="e.g. 4C"
+        style="width:100%;background:var(--surf2);border:1px solid var(--brd);border-radius:8px;color:var(--tx);font-size:13px;padding:9px 11px;outline:none;font-family:'Nunito',sans-serif;margin-bottom:10px"/>
+
+      <label style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Contact</label>
+      <input id="stContact" type="text" value="${contact||''}" placeholder="WhatsApp or email"
+        style="width:100%;background:var(--surf2);border:1px solid var(--brd);border-radius:8px;color:var(--tx);font-size:13px;padding:9px 11px;outline:none;font-family:'Nunito',sans-serif;margin-bottom:14px"/>
+
+      <button onclick="confirmSendToken('${reqId}')" style="width:100%;padding:12px;border-radius:11px;background:linear-gradient(135deg,#5A9090,#78B4B0);border:none;color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:8px">✅ Create token &amp; copy link</button>
+      <button onclick="document.getElementById('sendTokenModal').remove()" style="width:100%;padding:10px;border-radius:11px;background:transparent;border:1px solid var(--brd);color:var(--tx3);font-size:13px;cursor:pointer;font-family:'Nunito',sans-serif">Cancel</button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function stAutoToken() {
+  const name = (document.getElementById('stName')||{}).value || 'User';
+  const base  = name.trim().split(' ')[0].replace(/[^a-zA-Z]/g,'');
+  document.getElementById('stToken').value = base + '2026';
+}
+
+async function confirmSendToken(reqId) {
+  const token   = (document.getElementById('stToken')||{}).value.trim().replace(/\s/g,'');
+  const name    = (document.getElementById('stName')||{}).value.trim();
+  const hair    = (document.getElementById('stHair')||{}).value.trim();
+  const contact = (document.getElementById('stContact')||{}).value.trim();
+
+  if (!token) { alert('Please enter a token'); return; }
+
+  // 1. Create token in Supabase an_tokens
   try {
-    await fetch(`${CFG.url}/rest/v1/an_beta_requests?id=eq.${reqId}`, {
-      method:'PATCH',
-      headers:{apikey:CFG.key, Authorization:'Bearer '+CFG.key, 'Content-Type':'application/json', Prefer:'return=minimal'},
-      body: JSON.stringify({ status:'sent', token_sent:token })
+    const r = await fetch('https://wvdmkxofapswzuesjgjn.supabase.co/rest/v1/an_tokens', {
+      method: 'POST',
+      headers: {
+        apikey: SB_KEY,
+        Authorization: 'Bearer ' + SB_KEY,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal'
+      },
+      body: JSON.stringify({
+        token,
+        name,
+        contact,
+        hair_type:  hair,
+        active:     true,
+        use_count:  0,
+        expires_at: new Date(Date.now() + 28*24*60*60*1000).toISOString()
+      })
     });
-    alert(`✅ Marked as sent!\n\nRemember to actually send them:\nallnatural_final.html?t=${token}`);
-    loadAll();
-  } catch(e) { alert('Error updating: ' + e.message); }
+    if (!r.ok) {
+      const err = await r.text();
+      if (err.includes('duplicate')) {
+        alert('⚠️ Token "' + token + '" already exists — choose a different one');
+        return;
+      }
+      alert('Supabase error: ' + err);
+      return;
+    }
+  } catch(e) { alert('Network error: ' + e.message); return; }
+
+  // 2. Mark request as sent
+  if (reqId && reqId !== 'undefined') {
+    try {
+      await fetch('https://wvdmkxofapswzuesjgjn.supabase.co/rest/v1/an_beta_requests?id=eq.' + reqId, {
+        method: 'PATCH',
+        headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify({ status: 'sent', token_sent: token })
+      });
+    } catch(e) {}
+  }
+
+  // 3. Build the link and copy to clipboard
+  const link = 'https://lvakw33.github.io/AllNatural/allnatural_final.html?t=' + encodeURIComponent(token);
+  const msg  = '👑 Welcome to AllNatural Beta\n\nYour personal link:\n' + link + '\n\nOpen in Chrome (Android) or Safari (iPhone).\nDo not share this link — it is registered to you.\n\nTo add to home screen:\n• Android: tap ⋮ → Add to Home Screen\n• iPhone: tap Share ↑ → Add to Home Screen';
+
+  try {
+    await navigator.clipboard.writeText(msg);
+    document.getElementById('sendTokenModal').remove();
+    alert('✅ Token "' + token + '" created!\n\n📋 WhatsApp message copied to clipboard — paste and send to ' + (contact||name));
+  } catch(e) {
+    document.getElementById('sendTokenModal').remove();
+    alert('✅ Token "' + token + '" created in Supabase!\n\nSend this link:\n' + link);
+  }
+
+  loadAll();
 }
 
 async function declineRequest(reqId) {
