@@ -571,7 +571,7 @@ input,select,textarea{font-family:'Nunito',sans-serif;color:var(--tx)}
         return true;
       }
       const rows = await r.json();
-      if (rows.length > 0 && rows[0].active) {
+      if (rows.length > 0 && rows[0].active !== false) {
         // Log usage
         fetch(`${sbUrl}/rest/v1/an_tokens?token=eq.${encodeURIComponent(token)}`, {
           method: 'PATCH',
