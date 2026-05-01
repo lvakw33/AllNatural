@@ -527,10 +527,10 @@ input,select,textarea{font-family:'Nunito',sans-serif;color:var(--tx)}
   }
 })();
 
-/* ═══ TOKEN ACCESS GATE ════════════════════════════════════════════════ */
+/* ═══ TOKEN ACCESS GATE — simplified, bulletproof ══════════════════════ */
 (function() {
-  const TOKEN_KEY    = 'an_access_token';
-  const APPROVED_KEY = 'an_access_approved';
+  const TOKEN_KEY   = 'an_access_token';
+  const APPROVED_KEY= 'an_access_approved';
 
   function getUrlToken() {
     return new URLSearchParams(window.location.search).get('t') ||
@@ -538,32 +538,52 @@ input,select,textarea{font-family:'Nunito',sans-serif;color:var(--tx)}
   }
 
   window._accessGateCheck = async function() {
+    // Already approved on this device
     if (localStorage.getItem(APPROVED_KEY) === '1') return true;
+
     const token = getUrlToken();
+
+    // No token in URL — show wall
     if (!token) { showAccessWall(false); return false; }
+
+    // Check token against Supabase
     try {
       const r = await fetch(
         'https://wvdmkxofapswzuesjgjn.supabase.co/rest/v1/an_tokens?token=eq.' + encodeURIComponent(token) + '&select=id,active',
         { headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZG1reG9mYXBzd3p1ZXNqZ2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMjAzMzMsImV4cCI6MjA5MjY5NjMzM30.PFA8A7xbT0aG55CudzklhNRu1bxseZ0TnsRrSAURGks', Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZG1reG9mYXBzd3p1ZXNqZ2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMjAzMzMsImV4cCI6MjA5MjY5NjMzM30.PFA8A7xbT0aG55CudzklhNRu1bxseZ0TnsRrSAURGks' } }
       );
       const rows = r.ok ? await r.json() : [];
+
       if (rows.length > 0 && rows[0].active !== false) {
+        // Valid token — approve and log usage
         localStorage.setItem(APPROVED_KEY, '1');
         localStorage.setItem(TOKEN_KEY, token);
+        fetch('https://wvdmkxofapswzuesjgjn.supabase.co/rest/v1/an_tokens?token=eq.' + encodeURIComponent(token), {
+          method: 'PATCH',
+          headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZG1reG9mYXBzd3p1ZXNqZ2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMjAzMzMsImV4cCI6MjA5MjY5NjMzM30.PFA8A7xbT0aG55CudzklhNRu1bxseZ0TnsRrSAURGks', Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZG1reG9mYXBzd3p1ZXNqZ2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMjAzMzMsImV4cCI6MjA5MjY5NjMzM30.PFA8A7xbT0aG55CudzklhNRu1bxseZ0TnsRrSAURGks',
+                     'Content-Type': 'application/json', Prefer: 'return=minimal' },
+          body: JSON.stringify({ last_used: new Date().toISOString() })
+        }).catch(()=>{});
         return true;
       }
+
       if (rows.length === 0) {
+        // Token not in DB — log attempt and block
         fetch('https://wvdmkxofapswzuesjgjn.supabase.co/rest/v1/an_access_requests', {
           method: 'POST',
-          headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZG1reG9mYXBzd3p1ZXNqZ2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMjAzMzMsImV4cCI6MjA5MjY5NjMzM30.PFA8A7xbT0aG55CudzklhNRu1bxseZ0TnsRrSAURGks', Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZG1reG9mYXBzd3p1ZXNqZ2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMjAzMzMsImV4cCI6MjA5MjY5NjMzM30.PFA8A7xbT0aG55CudzklhNRu1bxseZ0TnsRrSAURGks', 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+          headers: { apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZG1reG9mYXBzd3p1ZXNqZ2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMjAzMzMsImV4cCI6MjA5MjY5NjMzM30.PFA8A7xbT0aG55CudzklhNRu1bxseZ0TnsRrSAURGks', Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZG1reG9mYXBzd3p1ZXNqZ2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMjAzMzMsImV4cCI6MjA5MjY5NjMzM30.PFA8A7xbT0aG55CudzklhNRu1bxseZ0TnsRrSAURGks',
+                     'Content-Type': 'application/json', Prefer: 'return=minimal' },
           body: JSON.stringify({ token_attempted: token, ua: navigator.userAgent, ts: new Date().toISOString() })
         }).catch(()=>{});
         showAccessWall(true);
         return false;
       }
+
       showAccessWall(true);
       return false;
+
     } catch(e) {
+      // Network error — let them in if they have a token
       localStorage.setItem(APPROVED_KEY, '1');
       localStorage.setItem(TOKEN_KEY, token);
       return true;
@@ -579,11 +599,13 @@ input,select,textarea{font-family:'Nunito',sans-serif;color:var(--tx)}
     wall.id = 'accessWall';
     wall.style.cssText = 'position:fixed;inset:0;background:#1C0F09;display:flex;align-items:center;justify-content:center;padding:24px;z-index:99999;font-family:\'Nunito\',sans-serif';
     wall.innerHTML = '<div style="max-width:360px;width:100%;text-align:center">'
-      + '<div style="font-size:48px;margin-bottom:14px">' + (badToken ? '🔒' : '👑') + '</div>'
+      + '<div style="font-size:48px;margin-bottom:14px">' + (badToken?'🔒':'👑') + '</div>'
       + '<div style="font-family:\'Cinzel\',serif;font-size:18px;font-weight:700;color:#E0BC70;margin-bottom:10px">'
       + (badToken ? 'Access not authorised' : 'You need an invitation') + '</div>'
       + '<div style="font-size:13px;color:#C8A880;line-height:1.7;margin-bottom:20px">'
-      + (badToken ? 'This link has not been authorised. Forwarded links do not work — each participant needs a personal link from the researcher.' : 'AllNatural is in closed beta. Access is by personal invitation only.')
+      + (badToken
+          ? 'This link has not been authorised. Forwarded links do not work — each participant needs a personal link from the researcher.'
+          : 'AllNatural is in closed beta. Access is by personal invitation only.')
       + '</div>'
       + (badToken ? '<div style="font-size:11px;color:#8A6848;margin-bottom:16px">The researcher has been notified.</div>' : '')
       + '<button onclick="window.location.href=window.location.pathname" style="width:100%;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,#5A9090,#78B4B0);color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:\'Nunito\',sans-serif">Request access from researcher</button>'
@@ -1094,6 +1116,11 @@ input,select,textarea{font-family:'Nunito',sans-serif;color:var(--tx)}
             <div class="prem-title">My Products Tracker</div>
             <div class="prem-sub">Track every product you use and see what really works</div>
           </div>
+        </div>
+        <!-- Usage tracker -->
+        <div class="card" style="margin-bottom:10px">
+          <div style="font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--tx);margin-bottom:8px">📊 Usage Tracker</div>
+          <div id="productUsageTracker"><div style="font-size:11px;color:var(--tx3)">Add products to see usage here</div></div>
         </div>
         <div id="productList"></div>
         <!-- Add product form -->
@@ -3950,8 +3977,17 @@ function renderWdSummary(body) {
   h += `<button class="btn" style="margin-top:14px" onclick="closeOverlay('wdModal');triggerCheckin('wash')">Done — Log how it went 📊</button>
   <button class="btn-ghost" onclick="closeOverlay('wdModal');openRoutineBuilder()">Customise My Routine →</button>`;
 
+  h += `<button onclick="pickWashDayProducts()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--brd2);background:var(--surf2);color:var(--tx2);font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:8px">🧴 Log products used today</button>`;
   body.innerHTML = h;
   playSound('unlock');
+}
+
+function pickWashDayProducts() {
+  openProductPicker(selected => {
+    if (selected.length) {
+      showToast('🧴 ' + selected.length + ' product' + (selected.length!==1?'s':'') + ' logged for today\'s wash');
+    }
+  });
 }
 
 // Pre-fill last wash products when guided flow starts
@@ -4289,7 +4325,12 @@ function buildScalpMap() {
   renderScalpMapSvg(svg);
   buildScalpSummary();
   const mc = document.getElementById('massageCt');
-  if (mc) mc.textContent = (ST.massageCount || 0) + ' massages this month';
+  if (mc) {
+    const wkStart2 = new Date(); wkStart2.setDate(wkStart2.getDate() - wkStart2.getDay());
+    const wkStr2   = wkStart2.toISOString().split('T')[0];
+    const wkCt2    = Object.keys(ST.questsDone || {}).filter(d => d >= wkStr2 && (ST.questsDone[d]||[]).includes('massage')).length;
+    mc.textContent = wkCt2 + ' massage' + (wkCt2 !== 1 ? 's' : '') + ' this week';
+  }
   updScalpScore();
 
   // Loc users: show buildup guidance above the map
@@ -4387,16 +4428,25 @@ function logMassage(silent) {
   if (!ST.questsDone) ST.questsDone = {};
   if (!ST.questsDone[t]) ST.questsDone[t] = [];
   ST.massageCount = (ST.massageCount || 0) + 1;
+  // Ask which oil they used — opens product picker for oils
+  if (!silent && (ST.myProducts||[]).filter(p=>p.cat==='oil').length > 0) {
+    openProductPicker(selected => {
+      if (selected.length) showToast('🌱 Logged ' + selected.map(p=>p.name).join(', '));
+    }, 'oil');
+  }
   if (!ST.questsDone[t].includes('massage')) {
     ST.xp += 25;
     ST.questsDone[t].push('massage');
   }
   saveState(); updXP(); buildQuests();
   const mc = document.getElementById('massageCt');
-  if (mc) const wkS = new Date(); wkS.setDate(wkS.getDate() - wkS.getDay());
-const wkStr = wkS.toISOString().split('T')[0];
-const wkCt = Object.keys(ST.questsDone||{}).filter(d=>d>=wkStr&&(ST.questsDone[d]||[]).includes('massage')).length;
-mc.textContent = wkCt + ' massage' + (wkCt!==1?'s':'') + ' this week';
+  if (mc) {
+    // Count this week's massages
+    const weekStart = new Date(); weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    const weekStr   = weekStart.toISOString().split('T')[0];
+    const weekCount = Object.keys(ST.questsDone || {}).filter(d => d >= weekStr && (ST.questsDone[d]||[]).includes('massage')).length;
+    mc.textContent  = weekCount + ' massage' + (weekCount !== 1 ? 's' : '') + ' this week';
+  }
   if (!silent) {
     showToast('🌱 Massage logged! +25 XP');
     notify('💆 Scalp massage complete — great for circulation');
@@ -4652,6 +4702,9 @@ function takeDownStyle() {
 const PROD_CATS = { shampoo:'🚿', conditioner:'🌿', moisturiser:'🧴', oil:'💧', styler:'👑', supplement:'💊', other:'📦' };
 
 function buildProducts() {
+  // Update usage tracker
+  const trackerEl = document.getElementById('productUsageTracker');
+  if (trackerEl) buildProductUsageTracker(trackerEl);
   const list = document.getElementById('productList');
   if (!list) return;
   const prods = ST.myProducts || [];
@@ -8603,9 +8656,9 @@ function togglePostpartum() {
   ST.isPostpartum = !ST.isPostpartum;
   saveState();
   buildProfile();
-  if (ST.isPostpartum) {
-    notify(ST.isPostpartum ? '💛 Postpartum mode on — shedding timeline added' : '✅ Postpartum mode off');
-  
+  notify(ST.isPostpartum
+    ? '💛 Postpartum mode on — shedding timeline added to your insights'
+    : '✅ Postpartum mode off');
 }
 
 function setPostpartumMonths(n) {
@@ -8906,7 +8959,7 @@ function buildModeInsightCard() {
     if (daysToWash !== null && daysToWash <= 2) {
       body = 'Wash day is ' + (daysToWash === 0 ? 'today!' : 'in ' + daysToWash + ' day' + (daysToWash>1?'s':'') + '!') + ' Pre-poo tonight with castor oil for maximum slip tomorrow.';
     }
-    action = 'Plan my wash day'; actionFn = "openWashDay()";
+    action = 'Go to Journey'; actionFn = "sw('journey')";
   }
 
   el.innerHTML = `
@@ -9101,6 +9154,134 @@ function importData() {
     reader.readAsText(file);
   };
   input.click();
+}
+
+
+/* ═══ PRODUCT PICKER — reusable across all processes ══════════════ */
+// Opens a bottom sheet to pick products from stock
+// onSelect(selectedProducts) is called with array of picked products
+
+let _ppCallback = null;
+let _ppSelected = new Set();
+let _ppCategory = null; // filter by category if set
+
+function openProductPicker(callback, filterCat) {
+  _ppCallback = callback;
+  _ppSelected = new Set();
+  _ppCategory  = filterCat || null;
+
+  const existing = document.getElementById('productPickerSheet');
+  if (existing) existing.remove();
+
+  const prods = (ST.myProducts || []).filter(p =>
+    !_ppCategory || p.cat === _ppCategory || !filterCat
+  );
+
+  const sheet = document.createElement('div');
+  sheet.id = 'productPickerSheet';
+  sheet.style.cssText = 'position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,.7);display:flex;align-items:flex-end;justify-content:center';
+  sheet.innerHTML = `
+    <div style="background:var(--bg1);border-radius:18px 18px 0 0;padding:16px;width:100%;max-width:480px;max-height:70vh;overflow-y:auto;-webkit-overflow-scrolling:touch">
+      <div style="font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--tx);margin-bottom:4px">🧴 Which products did you use?</div>
+      <div style="font-size:10px;color:var(--tx3);margin-bottom:12px">Tap to select · tap again to deselect</div>
+      ${!prods.length
+        ? `<div style="text-align:center;padding:20px;color:var(--tx3);font-size:12px">No products in stock yet — add some in Hair Lab → Products</div>`
+        : prods.map((p,i) => `
+          <div id="pp_${i}" onclick="ppToggle(${i})" style="
+            display:flex;align-items:center;gap:10px;padding:10px 12px;
+            border-radius:11px;margin-bottom:7px;cursor:pointer;
+            border:1.5px solid var(--brd);background:var(--surf);transition:all .2s
+          ">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--tx)">${p.name}</div>
+              <div style="font-size:10px;color:var(--tx3)">${p.brand||''} · ${p.cat||''} ${p.stockPct!=null?'· '+p.stockPct+'% left':''}</div>
+            </div>
+            <div id="pp_check_${i}" style="width:22px;height:22px;border-radius:50%;border:2px solid var(--brd);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s"></div>
+          </div>`).join('')}
+      <div style="display:flex;gap:8px;margin-top:12px;position:sticky;bottom:0;background:var(--bg1);padding-top:8px">
+        <button onclick="ppConfirm()" style="flex:1;padding:12px;border-radius:12px;background:linear-gradient(135deg,var(--tl),var(--tl2));border:none;color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif">Done ✓</button>
+        <button onclick="ppSkip()" style="flex:0 0 auto;padding:12px 16px;border-radius:12px;background:var(--surf2);border:1.5px solid var(--brd);color:var(--tx2);font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif">Skip</button>
+      </div>
+    </div>
+  `;
+  sheet.addEventListener('click', e => { if (e.target === sheet) ppSkip(); });
+  document.body.appendChild(sheet);
+}
+
+function ppToggle(i) {
+  const prods = (ST.myProducts || []).filter(p => !_ppCategory || p.cat === _ppCategory || !_ppCategory);
+  if (_ppSelected.has(i)) {
+    _ppSelected.delete(i);
+  } else {
+    _ppSelected.add(i);
+  }
+  const tile  = document.getElementById('pp_' + i);
+  const check = document.getElementById('pp_check_' + i);
+  const on = _ppSelected.has(i);
+  if (tile)  { tile.style.borderColor = on ? 'var(--tl)' : 'var(--brd)'; tile.style.background = on ? 'rgba(90,144,144,.1)' : 'var(--surf)'; }
+  if (check) { check.style.background = on ? 'var(--tl)' : 'transparent'; check.style.borderColor = on ? 'var(--tl)' : 'var(--brd)'; check.innerHTML = on ? '<div style="font-size:12px;color:#fff">✓</div>' : ''; }
+}
+
+function ppConfirm() {
+  const prods = ST.myProducts || [];
+  const selected = [..._ppSelected].map(i => prods[i]).filter(Boolean);
+  // Update stock for used products
+  selected.forEach(p => {
+    const idx = prods.indexOf(p);
+    if (idx >= 0 && prods[idx].stockPct != null) {
+      prods[idx].stockPct = Math.max(0, (prods[idx].stockPct || 100) - 5);
+    }
+    // Log use
+    if (!prods[prods.indexOf(p)].useLog) prods[prods.indexOf(p)].useLog = [];
+    prods[prods.indexOf(p)].useLog.push(today());
+  });
+  saveState();
+  const sheet = document.getElementById('productPickerSheet');
+  if (sheet) sheet.remove();
+  if (_ppCallback) _ppCallback(selected);
+}
+
+function ppSkip() {
+  const sheet = document.getElementById('productPickerSheet');
+  if (sheet) sheet.remove();
+  if (_ppCallback) _ppCallback([]);
+}
+
+/* ═══ PRODUCT USAGE TRACKER ════════════════════════════════════════ */
+function buildProductUsageTracker(containerEl) {
+  if (!containerEl) return;
+  const prods = ST.myProducts || [];
+  if (!prods.length) {
+    containerEl.innerHTML = `<div style="font-size:11px;color:var(--tx3);text-align:center;padding:12px">Add products in Hair Lab → Products to track usage here</div>`;
+    return;
+  }
+  // Sort by most recently used
+  const sorted = [...prods].sort((a,b) => {
+    const aLast = (a.useLog||[]).slice(-1)[0] || '';
+    const bLast = (b.useLog||[]).slice(-1)[0] || '';
+    return bLast.localeCompare(aLast);
+  });
+  containerEl.innerHTML = sorted.slice(0, 8).map((p,i) => {
+    const uses    = (p.useLog||[]).length;
+    const lastUse = (p.useLog||[]).slice(-1)[0] || null;
+    const daysAgoN = lastUse ? Math.round((new Date()-new Date(lastUse+'T12:00:00'))/864e5) : null;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--brd)">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11px;font-weight:700;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div>
+        <div style="font-size:9px;color:var(--tx3)">${p.cat||''} ${p.brand?'· '+p.brand:''}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:11px;font-weight:700;color:var(--tl2)">${uses} use${uses!==1?'s':''}</div>
+        <div style="font-size:9px;color:var(--tx3)">${daysAgoN===0?'Today':daysAgoN===1?'Yesterday':daysAgoN!=null?daysAgoN+'d ago':'Never'}</div>
+      </div>
+      ${p.stockPct!=null?`<div style="width:36px;text-align:center">
+        <div style="background:var(--surf3);border-radius:3px;height:4px;overflow:hidden;width:36px">
+          <div style="height:100%;border-radius:3px;background:${p.stockPct>=60?'var(--gr)':p.stockPct>=30?'var(--gd)':'var(--rd)'};width:${p.stockPct}%"></div>
+        </div>
+        <div style="font-size:8px;color:var(--tx3);margin-top:1px">${p.stockPct}%</div>
+      </div>`:''}
+    </div>`;
+  }).join('');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
